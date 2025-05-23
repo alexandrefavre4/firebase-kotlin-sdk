@@ -28,11 +28,17 @@ import kotlinx.serialization.Serializable
 import kotlinx.serialization.SerializationStrategy
 import kotlin.jvm.JvmName
 
-/** Returns the [FirebaseFirestore] instance of the default [FirebaseApp]. */
+/** Returns the [FirebaseFirestore] instance of the default [FirebaseApp] connected to the default database. */
 public expect val Firebase.firestore: FirebaseFirestore
 
-/** Returns the [FirebaseFirestore] instance of a given [FirebaseApp]. */
+/** Returns the [FirebaseFirestore] instance of a given [FirebaseApp] connected to the default database. */
 public expect fun Firebase.firestore(app: FirebaseApp): FirebaseFirestore
+
+/** Returns the [FirebaseFirestore] instance of the default [FirebaseApp] connected to a specific database. */
+public expect fun Firebase.firestore(database: String): FirebaseFirestore
+
+/** Returns the [FirebaseFirestore] instance of a given [FirebaseApp] connected to a specific database. */
+public expect fun Firebase.firestore(app: FirebaseApp, database: String): FirebaseFirestore
 
 internal expect class NativeFirebaseFirestore
 

@@ -38,12 +38,12 @@ jobs:
         run: ./gradlew :firebase-common:publish
       - name: Publish Firebase Common Internal
         run: ./gradlew :firebase-common-internal:publish
+      - name: Publish Firebase Firestore
+        run: ./gradlew :firebase-firestore:publish
       - name: Publish Firebase Config
         run: ./gradlew :firebase-config:publish
       - name: Publish Firebase Database
         run: ./gradlew :firebase-database:publish
-      - name: Publish Firebase Firestore
-        run: ./gradlew :firebase-firestore:publish
       - name: Publish Firebase Functions
         run: ./gradlew :firebase-functions:publish
       - name: Publish Firebase Messaging
