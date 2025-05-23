@@ -19,7 +19,6 @@ settings-language = "2.0"
 firebase-cocoapods = "11.4.0"
 ios-deploymentTarget = "13.0"
 test-logger-plugin = "4.0.0"
-dokka = "1.9.20"
 
 [libraries]
 android-gradle-plugin = { module = "com.android.tools.build:gradle", version.ref = "agp" }
@@ -48,7 +47,6 @@ kotlinx-coroutines-test = { module = "org.jetbrains.kotlinx:kotlinx-coroutines-t
 kotlinx-coroutines-swing = { module = "org.jetbrains.kotlinx:kotlinx-coroutines-swing", version.ref = "kotlinx-coroutines" }
 kotlinx-serialization-core = { module = "org.jetbrains.kotlinx:kotlinx-serialization-core", version.ref = "kotlinx-serialization" }
 kotlinx-datetime = { module = "org.jetbrains.kotlinx:kotlinx-datetime", version.ref = "kotlinx-datetime" }
-dokka-base = { module = "org.jetbrains.dokka:dokka-base", version.ref = "dokka" }
 
 [plugins]
 android-application = { id = "com.android.application", version.ref = "agp" }
@@ -58,5 +56,4 @@ kotlinx-binarycompatibilityvalidator = { id = "org.jetbrains.kotlinx.binary-comp
 multiplatform = { id = "org.jetbrains.kotlin.multiplatform", version.ref = "kotlin" }
 native-cocoapods = { id = "org.jetbrains.kotlin.native.cocoapods", version.ref = "kotlin" }
 test-logger-plugin = { id = "com.adarshr.test-logger", version.ref = "test-logger-plugin" }
-dokka = { id = "org.jetbrains.dokka", version.ref = "dokka" }
 kotlinter = { id = "org.jmailen.kotlinter", version.ref = "kotlinter" }
