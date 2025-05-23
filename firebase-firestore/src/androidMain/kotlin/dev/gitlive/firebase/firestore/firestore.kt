@@ -39,6 +39,12 @@ public actual val Firebase.firestore: FirebaseFirestore get() =
 public actual fun Firebase.firestore(app: FirebaseApp): FirebaseFirestore =
     FirebaseFirestore(AndroidFirebaseFirestore.getInstance(app.android))
 
+public actual fun Firebase.firestore(database: String): FirebaseFirestore =
+    FirebaseFirestore(AndroidFirebaseFirestore.getInstance(database))
+
+public actual fun Firebase.firestore(app: FirebaseApp, database: String): FirebaseFirestore =
+    FirebaseFirestore(AndroidFirebaseFirestore.getInstance(app.android, database))
+
 public val LocalCacheSettings.android: AndroidLocalCacheSettings get() = when (this) {
     is LocalCacheSettings.Persistent -> androidPersistentCacheSettings {
         setSizeBytes(sizeBytes)
