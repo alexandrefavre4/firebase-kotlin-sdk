@@ -29,6 +29,14 @@ public actual fun Firebase.firestore(app: FirebaseApp): FirebaseFirestore = Fire
     FIRFirestore.firestoreForApp(app.ios as objcnames.classes.FIRApp),
 )
 
+public actual fun Firebase.firestore(database: String): FirebaseFirestore = FirebaseFirestore(
+    FIRFirestore.firestoreForDatabase(database),
+)
+
+public actual fun Firebase.firestore(app: FirebaseApp, database: String): FirebaseFirestore = FirebaseFirestore(
+    FIRFirestore.firestoreForApp(app.ios as objcnames.classes.FIRApp, database),
+)
+
 public val LocalCacheSettings.ios: FIRLocalCacheSettingsProtocol get() = when (this) {
     is LocalCacheSettings.Persistent -> FIRPersistentCacheSettings(NSNumber.numberWithLong(sizeBytes))
     is LocalCacheSettings.Memory -> FIRMemoryCacheSettings(

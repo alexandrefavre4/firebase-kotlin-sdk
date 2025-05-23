@@ -38,6 +38,10 @@ public actual val Firebase.firestore: FirebaseFirestore get() =
 public actual fun Firebase.firestore(app: FirebaseApp): FirebaseFirestore =
     rethrow { FirebaseFirestore(NativeFirebaseFirestoreWrapper(app.js)) }
 
+public actual fun Firebase.firestore(database: String): FirebaseFirestore = throw NotImplementedError()
+
+public actual fun Firebase.firestore(app: FirebaseApp, database: String): FirebaseFirestore = throw NotImplementedError()
+
 internal actual data class NativeFirebaseFirestore(val js: JsFirestore)
 
 public operator fun FirebaseFirestore.Companion.invoke(js: JsFirestore): FirebaseFirestore = FirebaseFirestore(
