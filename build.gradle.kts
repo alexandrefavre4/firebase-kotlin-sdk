@@ -6,8 +6,8 @@ import org.jetbrains.dokka.base.DokkaBase
 import org.jetbrains.dokka.base.DokkaBaseConfiguration
 import org.jetbrains.dokka.gradle.AbstractDokkaTask
 import org.jetbrains.dokka.gradle.DokkaTaskPartial
-import java.net.URL
 import java.io.InputStream
+import java.net.URL
 
 plugins {
     alias(libs.plugins.android.application) apply false
@@ -70,7 +70,7 @@ tasks.withType<AbstractDokkaTask>().configureEach {
 
 subprojects {
 
-    group = "dev.gitlive"
+    group = "io.github.alexandrefavre4"
 
     val nonDocumentationList = listOf("test-utils", "firebase-common", "firebase-common-internal")
     val skipDocumentation = nonDocumentationList.contains(project.name)
