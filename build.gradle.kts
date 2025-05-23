@@ -1,13 +1,7 @@
 import org.apache.tools.ant.taskdefs.condition.Os
 import org.gradle.api.tasks.testing.logging.TestExceptionFormat
 import org.gradle.api.tasks.testing.logging.TestLogEvent
-import org.jetbrains.dokka.DokkaConfiguration
-import org.jetbrains.dokka.base.DokkaBase
-import org.jetbrains.dokka.base.DokkaBaseConfiguration
-import org.jetbrains.dokka.gradle.AbstractDokkaTask
-import org.jetbrains.dokka.gradle.DokkaTaskPartial
 import java.io.InputStream
-import java.net.URL
 
 plugins {
     alias(libs.plugins.android.application) apply false
@@ -18,15 +12,8 @@ plugins {
     alias(libs.plugins.ben.manes.versions) apply false
     alias(libs.plugins.kotlinter) apply false
     alias(libs.plugins.kotlinx.binarycompatibilityvalidator)
-    alias(libs.plugins.dokka)
     id("base")
     id("testOptionsConvention")
-}
-
-buildscript {
-    dependencies {
-        classpath(libs.dokka.base)
-    }
 }
 
 val compileSdkVersion by extra(34)
@@ -52,59 +39,9 @@ tasks {
     }
 }
 
-private val dokkaCopyrightMessage = "© 2024 GitLive Ltd."
-private val dokkaHomepageUrl = "https://github.com/GitLiveApp/firebase-kotlin-sdk"
-
-tasks.withType<AbstractDokkaTask>().configureEach {
-    val version = project.property("firebase-app.version") as String
-    moduleVersion.set(version)
-    moduleName.set("Firebase Kotlin SDK")
-
-    pluginConfiguration<DokkaBase, DokkaBaseConfiguration> {
-        customAssets = listOf(file("documentation/gitlive-logo.png"), file("documentation/homepage.svg"))
-        customStyleSheets = listOf(file("documentation/logo-styles.css"))
-        footerMessage = dokkaCopyrightMessage
-        homepageLink = dokkaHomepageUrl
-    }
-}
-
 subprojects {
 
     group = "io.github.alexandrefavre4"
-
-    val nonDocumentationList = listOf("test-utils", "firebase-common", "firebase-common-internal")
-    val skipDocumentation = nonDocumentationList.contains(project.name)
-    if (!skipDocumentation) {
-        apply(plugin = "org.jetbrains.dokka")
-    }
-
-    this.tasks.withType<DokkaTaskPartial>().configureEach {
-        pluginConfiguration<DokkaBase, DokkaBaseConfiguration> {
-            footerMessage = dokkaCopyrightMessage
-            separateInheritedMembers = false
-            homepageLink = dokkaHomepageUrl
-        }
-        dokkaSourceSets {
-            configureEach {
-                documentedVisibilities.set(setOf(DokkaConfiguration.Visibility.PUBLIC))
-                includes.setFrom("documentation.md")
-
-                sourceLink {
-                    localDirectory.set(projectDir.resolve("src"))
-                    remoteUrl.set(URL("$dokkaHomepageUrl/tree/master/${project.name}/src"))
-                }
-            }
-            if (this.names.contains("jsMain")) {
-                named("jsMain") {
-                    perPackageOption {
-                        // External files for JS should not be documented since they will not be available
-                        matchingRegex.set(".*.externals.*")
-                        suppress.set(true)
-                    }
-                }
-            }
-        }
-    }
 
     apply(plugin = "com.adarshr.test-logger")
     apply(plugin = "org.jmailen.kotlinter")
