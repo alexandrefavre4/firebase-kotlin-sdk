@@ -34,16 +34,16 @@ import com.google.firebase.firestore.persistentCacheSettings as androidPersisten
 public val FirebaseFirestore.android: AndroidFirebaseFirestore get() = AndroidFirebaseFirestore.getInstance()
 
 public actual val Firebase.firestore: FirebaseFirestore get() =
-    FirebaseFirestore(AndroidFirebaseFirestore.getInstance())
+    FirebaseFirestoreImpl(AndroidFirebaseFirestore.getInstance())
 
 public actual fun Firebase.firestore(app: FirebaseApp): FirebaseFirestore =
-    FirebaseFirestore(AndroidFirebaseFirestore.getInstance(app.android))
+    FirebaseFirestoreImpl(AndroidFirebaseFirestore.getInstance(app.android))
 
 public actual fun Firebase.firestore(database: String): FirebaseFirestore =
-    FirebaseFirestore(AndroidFirebaseFirestore.getInstance(database))
+    FirebaseFirestoreImpl(AndroidFirebaseFirestore.getInstance(database))
 
 public actual fun Firebase.firestore(app: FirebaseApp, database: String): FirebaseFirestore =
-    FirebaseFirestore(AndroidFirebaseFirestore.getInstance(app.android, database))
+    FirebaseFirestoreImpl(AndroidFirebaseFirestore.getInstance(app.android, database))
 
 public val LocalCacheSettings.android: AndroidLocalCacheSettings get() = when (this) {
     is LocalCacheSettings.Persistent -> androidPersistentCacheSettings {
@@ -112,23 +112,23 @@ public actual fun firestoreSettings(
 
 internal actual typealias NativeWriteBatch = AndroidWriteBatch
 
-public operator fun WriteBatch.Companion.invoke(android: AndroidWriteBatch): WriteBatch = WriteBatch(android)
+public operator fun WriteBatch.Companion.invoke(android: AndroidWriteBatch): WriteBatch = WriteBatchImpl(android)
 public val WriteBatch.android: AndroidWriteBatch get() = native
 
 internal actual typealias NativeTransaction = AndroidTransaction
 
-public operator fun Transaction.Companion.invoke(android: AndroidTransaction): Transaction = Transaction(android)
+public operator fun Transaction.Companion.invoke(android: AndroidTransaction): Transaction = TransactionImpl(android)
 public val Transaction.android: AndroidTransaction get() = native
 
 /** A class representing a platform specific Firebase DocumentReference. */
 internal actual typealias NativeDocumentReferenceType = AndroidDocumentReference
 
-public operator fun DocumentReference.Companion.invoke(android: AndroidDocumentReference): DocumentReference = DocumentReference(android)
+public operator fun DocumentReference.Companion.invoke(android: AndroidDocumentReference): DocumentReference = DocumentReferenceImpl(android)
 public val DocumentReference.android: AndroidDocumentReference get() = native.android
 
 internal actual typealias NativeQuery = AndroidQuery
 
-public operator fun Query.Companion.invoke(android: AndroidQuery): Query = Query(android)
+public operator fun Query.Companion.invoke(android: AndroidQuery): Query = QueryImpl(android)
 public val Query.android: AndroidQuery get() = native
 
 public actual typealias Direction = AndroidQuery.Direction
@@ -136,7 +136,7 @@ public actual typealias ChangeType = AndroidDocumentChange.Type
 
 internal actual typealias NativeCollectionReference = AndroidCollectionReference
 
-public operator fun CollectionReference.Companion.invoke(android: AndroidCollectionReference): CollectionReference = CollectionReference(android)
+public operator fun CollectionReference.Companion.invoke(android: AndroidCollectionReference): CollectionReference = CollectionReferenceImpl(android)
 public val CollectionReference.android: AndroidCollectionReference get() = native
 
 public actual typealias FirebaseFirestoreException = AndroidFirebaseFirestoreException

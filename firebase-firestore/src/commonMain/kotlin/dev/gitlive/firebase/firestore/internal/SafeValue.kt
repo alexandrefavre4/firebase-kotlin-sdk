@@ -3,6 +3,7 @@ package dev.gitlive.firebase.firestore.internal
 import dev.gitlive.firebase.firestore.DocumentReference
 import dev.gitlive.firebase.firestore.GeoPoint
 import dev.gitlive.firebase.firestore.Timestamp
+import dev.gitlive.firebase.firestore.native
 
 internal val Any.safeValue: Any get() = when (this) {
     is Timestamp -> nativeValue

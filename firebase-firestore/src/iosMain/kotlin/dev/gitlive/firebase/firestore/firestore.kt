@@ -23,17 +23,17 @@ import platform.darwin.dispatch_queue_t
 public val FirebaseFirestore.ios: FIRFirestore get() = FIRFirestore.firestore()
 
 public actual val Firebase.firestore: FirebaseFirestore get() =
-    FirebaseFirestore(FIRFirestore.firestore())
+    FirebaseFirestoreImpl(FIRFirestore.firestore())
 
-public actual fun Firebase.firestore(app: FirebaseApp): FirebaseFirestore = FirebaseFirestore(
+public actual fun Firebase.firestore(app: FirebaseApp): FirebaseFirestore = FirebaseFirestoreImpl(
     FIRFirestore.firestoreForApp(app.ios as objcnames.classes.FIRApp),
 )
 
-public actual fun Firebase.firestore(database: String): FirebaseFirestore = FirebaseFirestore(
+public actual fun Firebase.firestore(database: String): FirebaseFirestore = FirebaseFirestoreImpl(
     FIRFirestore.firestoreForDatabase(database),
 )
 
-public actual fun Firebase.firestore(app: FirebaseApp, database: String): FirebaseFirestore = FirebaseFirestore(
+public actual fun Firebase.firestore(app: FirebaseApp, database: String): FirebaseFirestore = FirebaseFirestoreImpl(
     FIRFirestore.firestoreForApp(app.ios as objcnames.classes.FIRApp, database),
 )
 
@@ -49,7 +49,7 @@ public val LocalCacheSettings.ios: FIRLocalCacheSettingsProtocol get() = when (t
 
 internal actual typealias NativeFirebaseFirestore = FIRFirestore
 
-public operator fun FirebaseFirestore.Companion.invoke(ios: FIRFirestore): FirebaseFirestore = FirebaseFirestore(ios)
+public operator fun FirebaseFirestore.Companion.invoke(ios: FIRFirestore): FirebaseFirestore = FirebaseFirestoreImpl(ios)
 
 public actual data class FirebaseFirestoreSettings(
     actual val sslEnabled: Boolean,
@@ -111,18 +111,18 @@ public actual fun firestoreSettings(
 
 internal actual typealias NativeWriteBatch = FIRWriteBatch
 
-public operator fun WriteBatch.Companion.invoke(ios: FIRWriteBatch): WriteBatch = WriteBatch(ios)
+public operator fun WriteBatch.Companion.invoke(ios: FIRWriteBatch): WriteBatch = WriteBatchImpl(ios)
 public val WriteBatch.ios: FIRWriteBatch get() = native
 
 internal actual typealias NativeTransaction = FIRTransaction
 
-public operator fun Transaction.Companion.invoke(ios: FIRTransaction): Transaction = Transaction(ios)
+public operator fun Transaction.Companion.invoke(ios: FIRTransaction): Transaction = TransactionImpl(ios)
 public val Transaction.ios: FIRTransaction get() = native
 
 /** A class representing a platform specific Firebase DocumentReference. */
 internal actual typealias NativeDocumentReferenceType = FIRDocumentReference
 
-public operator fun DocumentReference.Companion.invoke(ios: FIRDocumentReference): DocumentReference = DocumentReference(ios)
+public operator fun DocumentReference.Companion.invoke(ios: FIRDocumentReference): DocumentReference = DocumentReferenceImpl(ios)
 public val DocumentReference.ios: FIRDocumentReference get() = native.ios
 
 internal actual typealias NativeQuery = FIRQuery
@@ -132,7 +132,7 @@ public val Query.ios: NativeQuery get() = native
 
 internal actual typealias NativeCollectionReference = FIRCollectionReference
 
-public operator fun CollectionReference.Companion.invoke(ios: FIRCollectionReference): CollectionReference = CollectionReference(ios)
+public operator fun CollectionReference.Companion.invoke(ios: FIRCollectionReference): CollectionReference = CollectionReferenceImpl(ios)
 public val CollectionReference.ios: FIRCollectionReference get() = native
 
 public actual class FirebaseFirestoreException(message: String, public val code: FirestoreExceptionCode) : FirebaseException(message)
