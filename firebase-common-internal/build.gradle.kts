@@ -168,10 +168,7 @@ if (project.property("firebase-common.skipJsTests") == "true") {
     }
 }
 
-signing {
-    val signingKey: String? by project
-    val signingPassword: String? by project
-    useInMemoryPgpKeys(signingKey, signingPassword)
-    sign(publishing.publications)
+mavenPublishing {
+    coordinates(group.toString(), project.name, version.toString())
 }
 

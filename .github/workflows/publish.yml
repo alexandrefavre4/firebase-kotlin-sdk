@@ -8,10 +8,11 @@ on:
     types: [ prereleased, released ]
 
 env:
-  sonatypeUsername: ${{ secrets.SONATYPEUSERNAME }}
-  sonatypePassword: ${{ secrets.SONATYPEPASSWORD }}
-  ORG_GRADLE_PROJECT_signingKey: ${{ secrets.GPG_PRIVATE_KEY }}
-  ORG_GRADLE_PROJECT_signingPassword: ${{ secrets.PASSPHRASE }}
+  ORG_GRADLE_PROJECT_mavenCentralUsername: ${{ secrets.MAVEN_CENTRAL_USERNAME }}
+  ORG_GRADLE_PROJECT_mavenCentralPassword: ${{ secrets.MAVEN_CENTRAL_PASSWORD }}
+  ORG_GRADLE_PROJECT_signingInMemoryKeyId: ${{ secrets.SIGNING_KEY_ID }}
+  ORG_GRADLE_PROJECT_signingInMemoryKeyPassword: ${{ secrets.SIGNING_PASSWORD }}
+  ORG_GRADLE_PROJECT_signingInMemoryKey: ${{ secrets.GPG_KEY_CONTENTS }}
 
 jobs:
   build:
@@ -28,31 +29,5 @@ jobs:
         run: ./gradlew :updateVersions
       - name: Grant execute permission for gradlew
         run: chmod +x gradlew
-      - name: Publish Firebase Analytics
-        run: ./gradlew :firebase-analytics:publish
-      - name: Publish Firebase App
-        run: ./gradlew :firebase-app:publish
-      - name: Publish Firebase Auth
-        run: ./gradlew :firebase-auth:publish
-      - name: Publish Firebase Common
-        run: ./gradlew :firebase-common:publish
-      - name: Publish Firebase Common Internal
-        run: ./gradlew :firebase-common-internal:publish
-      - name: Publish Firebase Firestore
-        run: ./gradlew :firebase-firestore:publish
-      - name: Publish Firebase Config
-        run: ./gradlew :firebase-config:publish
-      - name: Publish Firebase Database
-        run: ./gradlew :firebase-database:publish
-      - name: Publish Firebase Functions
-        run: ./gradlew :firebase-functions:publish
-      - name: Publish Firebase Messaging
-        run: ./gradlew :firebase-messaging:publish
-      - name: Publish Firebase Storage
-        run: ./gradlew :firebase-storage:publish
-      - name: Publish Firebase Installations
-        run: ./gradlew :firebase-installations:publish
-      - name: Publish Firebase Performance
-        run: ./gradlew :firebase-perf:publish
-      - name: Publish Firebase Crashlytics
-        run: ./gradlew :firebase-crashlytics:publish
+      - name: Publish
+        run: ./publish.sh

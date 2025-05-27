@@ -14,6 +14,7 @@ plugins {
     kotlin("native.cocoapods")
     kotlin("multiplatform")
     id("testOptionsConvention")
+    alias(libs.plugins.vanniktech.publish)
 }
 
 android {
@@ -161,9 +162,6 @@ if (project.property("firebase-storage.skipJsTests") == "true") {
     }
 }
 
-signing {
-    val signingKey: String? by project
-    val signingPassword: String? by project
-    useInMemoryPgpKeys(signingKey, signingPassword)
-    sign(publishing.publications)
+mavenPublishing {
+    coordinates(group.toString(), project.name, version.toString())
 }

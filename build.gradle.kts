@@ -1,3 +1,4 @@
+import com.vanniktech.maven.publish.SonatypeHost
 import org.apache.tools.ant.taskdefs.condition.Os
 import org.gradle.api.tasks.testing.logging.TestExceptionFormat
 import org.gradle.api.tasks.testing.logging.TestLogEvent
@@ -12,6 +13,7 @@ plugins {
     alias(libs.plugins.ben.manes.versions) apply false
     alias(libs.plugins.kotlinter) apply false
     alias(libs.plugins.kotlinx.binarycompatibilityvalidator)
+    alias(libs.plugins.vanniktech.publish)
     id("base")
     id("testOptionsConvention")
 }
@@ -45,6 +47,7 @@ subprojects {
 
     apply(plugin = "com.adarshr.test-logger")
     apply(plugin = "org.jmailen.kotlinter")
+	apply(plugin = "com.vanniktech.maven.publish")
 
     repositories {
         mavenLocal()
@@ -125,62 +128,45 @@ subprojects {
     apply(plugin = "maven-publish")
     apply(plugin = "signing")
 
-    val javadocJar: TaskProvider<Jar> by tasks.registering(Jar::class) {
-        archiveClassifier.set("javadoc")
-    }
+    mavenPublishing {
 
-    configure<PublishingExtension> {
+        publishToMavenCentral(SonatypeHost.CENTRAL_PORTAL)
+        signAllPublications()
 
-        repositories {
-            maven {
-                url = uri("https://oss.sonatype.org/service/local/staging/deploy/maven2")
+		pom {
+			name.set("firebase-kotlin-sdk")
+			description.set("The Firebase Kotlin SDK is a Kotlin-first SDK for Firebase. It's API is similar to the Firebase Android SDK Kotlin Extensions but also supports multiplatform projects, enabling you to use Firebase directly from your common source targeting iOS, Android or JS.")
+			url.set("https://github.com/GitLiveApp/firebase-kotlin-sdk")
+			inceptionYear.set("2019")
 
-                credentials {
-                    username = project.findProperty("sonatypeUsername") as String? ?: System.getenv("sonatypeUsername")
-                    password = project.findProperty("sonatypePassword") as String? ?: System.getenv("sonatypePassword")
-                }
-            }
-        }
+			scm {
+				url.set("https://github.com/GitLiveApp/firebase-kotlin-sdk")
+				connection.set("scm:git:https://github.com/GitLiveApp/firebase-kotlin-sdk.git")
+				developerConnection.set("scm:git:https://github.com/GitLiveApp/firebase-kotlin-sdk.git")
+				tag.set("HEAD")
+			}
 
-        publications.all {
-            this as MavenPublication
-            artifact(javadocJar)
+			issueManagement {
+				system.set("GitHub Issues")
+				url.set("https://github.com/GitLiveApp/firebase-kotlin-sdk/issues")
+			}
 
-            pom {
-                name.set("firebase-kotlin-sdk")
-                description.set("The Firebase Kotlin SDK is a Kotlin-first SDK for Firebase. It's API is similar to the Firebase Android SDK Kotlin Extensions but also supports multiplatform projects, enabling you to use Firebase directly from your common source targeting iOS, Android or JS.")
-                url.set("https://github.com/GitLiveApp/firebase-kotlin-sdk")
-                inceptionYear.set("2019")
+			developers {
+				developer {
+					name.set("Nicholas Bransby-Williams")
+					email.set("nbransby@gmail.com")
+				}
+			}
 
-                scm {
-                    url.set("https://github.com/GitLiveApp/firebase-kotlin-sdk")
-                    connection.set("scm:git:https://github.com/GitLiveApp/firebase-kotlin-sdk.git")
-                    developerConnection.set("scm:git:https://github.com/GitLiveApp/firebase-kotlin-sdk.git")
-                    tag.set("HEAD")
-                }
-
-                issueManagement {
-                    system.set("GitHub Issues")
-                    url.set("https://github.com/GitLiveApp/firebase-kotlin-sdk/issues")
-                }
-
-                developers {
-                    developer {
-                        name.set("Nicholas Bransby-Williams")
-                        email.set("nbransby@gmail.com")
-                    }
-                }
-
-                licenses {
-                    license {
-                        name.set("The Apache Software License, Version 2.0")
-                        url.set("http://www.apache.org/licenses/LICENSE-2.0.txt")
-                        distribution.set("repo")
-                        comments.set("A business-friendly OSS license")
-                    }
-                }
-            }
-        }
+			licenses {
+				license {
+					name.set("The Apache Software License, Version 2.0")
+					url.set("http://www.apache.org/licenses/LICENSE-2.0.txt")
+					distribution.set("repo")
+					comments.set("A business-friendly OSS license")
+				}
+			}
+		}
 
     }
 
