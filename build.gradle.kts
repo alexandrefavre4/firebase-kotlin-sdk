@@ -29,6 +29,7 @@ tasks {
             "firebase-app:updateVersion", "firebase-app:updateDependencyVersion",
             "firebase-auth:updateVersion", "firebase-auth:updateDependencyVersion",
             "firebase-common:updateVersion", "firebase-common:updateDependencyVersion",
+            "firebase-common-internal:updateVersion", "firebase-common-internal:updateDependencyVersion",
             "firebase-config:updateVersion", "firebase-config:updateDependencyVersion",
             "firebase-database:updateVersion", "firebase-database:updateDependencyVersion",
             "firebase-firestore:updateVersion", "firebase-firestore:updateDependencyVersion",
