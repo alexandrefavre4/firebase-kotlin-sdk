@@ -26,6 +26,7 @@ import kotlinx.coroutines.flow.map
 import kotlinx.serialization.DeserializationStrategy
 import kotlinx.serialization.Serializable
 import kotlinx.serialization.SerializationStrategy
+import kotlinx.serialization.serializer
 
 /** Returns the [FirebaseFirestore] instance of the default [FirebaseApp] connected to the default database. */
 public expect val Firebase.firestore: FirebaseFirestore
@@ -318,6 +319,33 @@ public interface WriteBatch {
     public companion object
 }
 
+public inline fun <reified T : Any> WriteBatch.set(
+    documentRef: DocumentReference,
+    data: T,
+    merge: Boolean = false,
+    noinline buildSettings: EncodeSettings.Builder.() -> Unit = {},
+) = set(documentRef, serializer(), data, merge, buildSettings)
+
+public inline fun <reified T : Any> WriteBatch.set(
+    documentRef: DocumentReference,
+    data: T,
+    vararg mergeFields: String,
+    noinline buildSettings: EncodeSettings.Builder.() -> Unit = {},
+): WriteBatch = set(documentRef, serializer(), data, mergeFields = mergeFields, buildSettings)
+
+public inline fun <reified T : Any> WriteBatch.set(
+    documentRef: DocumentReference,
+    data: T,
+    vararg mergeFieldPaths: FieldPath,
+    noinline buildSettings: EncodeSettings.Builder.() -> Unit = {},
+): WriteBatch = set(documentRef, serializer(), data, mergeFieldPaths = mergeFieldPaths, buildSettings)
+
+public inline fun <reified T : Any> WriteBatch.update(
+    documentRef: DocumentReference,
+    data: T,
+    noinline buildSettings: EncodeSettings.Builder.() -> Unit = {},
+): WriteBatch = update(documentRef, serializer(), data, buildSettings)
+
 internal val WriteBatch.native: NativeWriteBatch
     get() = (this as WriteBatchImpl).nativeWrapper.native
 
@@ -390,6 +418,29 @@ public interface DocumentReference {
 
     public companion object
 }
+
+public suspend inline fun <reified T : Any> DocumentReference.set(
+    data: T,
+    merge: Boolean = false,
+    noinline buildSettings: EncodeSettings.Builder.() -> Unit = {},
+) = set(serializer(), data, merge, buildSettings)
+
+public suspend inline fun <reified T : Any> DocumentReference.set(
+    data: T,
+    vararg mergeFields: String,
+    noinline buildSettings: EncodeSettings.Builder.() -> Unit = {},
+) = set(serializer(), data, mergeFields = mergeFields, buildSettings)
+
+public suspend inline fun <reified T : Any> DocumentReference.set(
+    data: T,
+    vararg mergeFieldPaths: FieldPath,
+    noinline buildSettings: EncodeSettings.Builder.() -> Unit = {},
+) = set(serializer(), data, mergeFieldPaths = mergeFieldPaths, buildSettings)
+
+public suspend inline fun <reified T : Any> DocumentReference.update(
+    data: T,
+    noinline buildSettings: EncodeSettings.Builder.() -> Unit = {},
+) = update(serializer(), data, buildSettings)
 
 internal val DocumentReference.native: NativeDocumentReference
     get() = (this as DocumentReferenceImpl).native
@@ -493,6 +544,11 @@ public interface CollectionReference : Query {
 
     public companion object
 }
+
+public suspend inline fun <reified T : Any> CollectionReference.add(
+    data: T,
+    noinline buildSettings: EncodeSettings.Builder.() -> Unit = {},
+): DocumentReference = add(serializer(), data, buildSettings)
 
 internal val CollectionReference.native: NativeCollectionReference
     get() = (this as CollectionReferenceImpl).nativeWrapper.native
@@ -598,6 +654,23 @@ public interface DocumentSnapshot {
 
     public companion object
 }
+
+public inline fun <reified T> DocumentSnapshot.get(
+    field: String,
+    serverTimestampBehavior: ServerTimestampBehavior = ServerTimestampBehavior.NONE,
+    noinline buildSettings: DecodeSettings.Builder.() -> Unit = {},
+): T = get(field, serializer(), serverTimestampBehavior, buildSettings)
+
+public inline fun <reified T> DocumentSnapshot.get(
+    fieldPath: FieldPath,
+    serverTimestampBehavior: ServerTimestampBehavior = ServerTimestampBehavior.NONE,
+    noinline buildSettings: DecodeSettings.Builder.() -> Unit = {},
+): T = get(fieldPath, serializer(), serverTimestampBehavior, buildSettings)
+
+public inline fun <reified T> DocumentSnapshot.data(
+    serverTimestampBehavior: ServerTimestampBehavior = ServerTimestampBehavior.NONE,
+    noinline buildSettings: DecodeSettings.Builder.() -> Unit = {},
+): T = data(serializer(), serverTimestampBehavior, buildSettings)
 
 internal val DocumentSnapshot.native: NativeDocumentSnapshot
     get() = (this as DocumentSnapshotImpl).nativeWrapper.native
