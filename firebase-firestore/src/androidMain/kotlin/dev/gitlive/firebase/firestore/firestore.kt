@@ -150,7 +150,7 @@ public val QuerySnapshot.android: AndroidQuerySnapshot get() = android
 
 public actual class QuerySnapshot(internal val android: AndroidQuerySnapshot) {
     public actual val documents: List<DocumentSnapshot>
-        get() = android.documents.map { DocumentSnapshot(NativeDocumentSnapshotWrapper(it)) }
+        get() = android.documents.map { DocumentSnapshotImpl(NativeDocumentSnapshotWrapper(it)) }
     public actual val documentChanges: List<DocumentChange>
         get() = android.documentChanges.map { DocumentChange(it) }
     public actual val metadata: SnapshotMetadata get() = SnapshotMetadata(android.metadata)
@@ -160,7 +160,7 @@ public val DocumentChange.android: AndroidDocumentChange get() = android
 
 public actual class DocumentChange(internal val android: AndroidDocumentChange) {
     public actual val document: DocumentSnapshot
-        get() = DocumentSnapshot(NativeDocumentSnapshotWrapper(android.document))
+        get() = DocumentSnapshotImpl(NativeDocumentSnapshotWrapper(android.document))
     public actual val newIndex: Int
         get() = android.newIndex
     public actual val oldIndex: Int

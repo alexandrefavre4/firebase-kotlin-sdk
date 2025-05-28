@@ -242,7 +242,7 @@ public data class TransactionImpl internal constructor(internal val nativeWrappe
     internal fun updateEncodedFieldPathsAndValues(documentRef: DocumentReference, encodedFieldsAndValues: List<Pair<EncodedFieldPath, Any?>>): Transaction = TransactionImpl(nativeWrapper.updateEncodedFieldPathsAndValues(documentRef, encodedFieldsAndValues))
 
     public override fun delete(documentRef: DocumentReference): Transaction = TransactionImpl(nativeWrapper.delete(documentRef))
-    public override suspend fun get(documentRef: DocumentReference): DocumentSnapshot = DocumentSnapshot(nativeWrapper.get(documentRef))
+    public override suspend fun get(documentRef: DocumentReference): DocumentSnapshot = DocumentSnapshotImpl(nativeWrapper.get(documentRef))
 }
 
 internal expect open class NativeQuery
@@ -402,12 +402,12 @@ public data class DocumentReferenceImpl internal constructor(internal val native
 
     public override val id: String get() = native.id
     public override val path: String get() = native.path
-    public override val snapshots: Flow<DocumentSnapshot> get() = native.snapshots.map(::DocumentSnapshot)
+    public override val snapshots: Flow<DocumentSnapshot> get() = native.snapshots.map(::DocumentSnapshotImpl)
     public override val parent: CollectionReference get() = CollectionReferenceImpl(native.parent)
-    public override fun snapshots(includeMetadataChanges: Boolean): Flow<DocumentSnapshot> = native.snapshots(includeMetadataChanges).map(::DocumentSnapshot)
+    public override fun snapshots(includeMetadataChanges: Boolean): Flow<DocumentSnapshot> = native.snapshots(includeMetadataChanges).map(::DocumentSnapshotImpl)
 
     public override fun collection(collectionPath: String): CollectionReference = CollectionReferenceImpl(native.collection(collectionPath))
-    public override suspend fun get(source: Source): DocumentSnapshot = DocumentSnapshot(native.get(source))
+    public override suspend fun get(source: Source): DocumentSnapshot = DocumentSnapshotImpl(native.get(source))
 
     public override suspend fun <T : Any> set(strategy: SerializationStrategy<T>, data: T, merge: Boolean, buildSettings: EncodeSettings.Builder.() -> Unit) {
         setEncoded(
@@ -509,10 +509,6 @@ public data class CollectionReferenceImpl internal constructor(internal val nati
 
     public override fun document(documentPath: String): DocumentReference = DocumentReferenceImpl(nativeWrapper.document(documentPath))
 
-    public suspend inline fun <reified T : Any> add(data: T, buildSettings: EncodeSettings.Builder.() -> Unit = {}): DocumentReference = addEncoded(
-        encodeAsObject(data, buildSettings),
-    )
-
     public override suspend fun <T : Any> add(strategy: SerializationStrategy<T>, data: T, buildSettings: EncodeSettings.Builder.() -> Unit): DocumentReference = addEncoded(
         encodeAsObject(strategy, data, buildSettings),
     )
@@ -571,35 +567,48 @@ public expect class DocumentChange {
 
 internal expect class NativeDocumentSnapshot
 
-public data class DocumentSnapshot internal constructor(internal val nativeWrapper: NativeDocumentSnapshotWrapper) {
+public interface DocumentSnapshot {
 
-    public companion object {}
+    public val exists: Boolean
+    public val id: String
+    public val reference: DocumentReference
+    public val metadata: SnapshotMetadata
+
+    public fun contains(field: String): Boolean
+    public fun contains(fieldPath: FieldPath): Boolean
+
+    public fun <T> get(field: String, strategy: DeserializationStrategy<T>, serverTimestampBehavior: ServerTimestampBehavior = ServerTimestampBehavior.NONE, buildSettings: DecodeSettings.Builder.() -> Unit = {}): T
+
+    public fun <T> get(fieldPath: FieldPath, strategy: DeserializationStrategy<T>, serverTimestampBehavior: ServerTimestampBehavior = ServerTimestampBehavior.NONE, buildSettings: DecodeSettings.Builder.() -> Unit = {}): T
+
+    public companion object
+}
+
+internal val DocumentSnapshot.native: NativeDocumentSnapshot
+    get() = (this as DocumentSnapshotImpl).nativeWrapper.native
+
+public data class DocumentSnapshotImpl internal constructor(internal val nativeWrapper: NativeDocumentSnapshotWrapper): DocumentSnapshot {
 
     internal constructor(native: NativeDocumentSnapshot) : this(NativeDocumentSnapshotWrapper(native))
 
-    internal val native: NativeDocumentSnapshot = nativeWrapper.native
+    override val exists: Boolean get() = nativeWrapper.exists
+    override val id: String get() = nativeWrapper.id
+    override val reference: DocumentReference get() = DocumentReferenceImpl(nativeWrapper.reference)
+    override val metadata: SnapshotMetadata get() = nativeWrapper.metadata
 
-    val exists: Boolean get() = nativeWrapper.exists
-    val id: String get() = nativeWrapper.id
-    val reference: DocumentReference get() = DocumentReferenceImpl(nativeWrapper.reference)
-    val metadata: SnapshotMetadata get() = nativeWrapper.metadata
+    public override fun contains(field: String): Boolean = nativeWrapper.contains(field)
+    public override fun contains(fieldPath: FieldPath): Boolean = nativeWrapper.contains(fieldPath.encoded)
 
-    public fun contains(field: String): Boolean = nativeWrapper.contains(field)
-    public fun contains(fieldPath: FieldPath): Boolean = nativeWrapper.contains(fieldPath.encoded)
-
-    public inline fun <reified T> get(field: String, serverTimestampBehavior: ServerTimestampBehavior = ServerTimestampBehavior.NONE, buildSettings: DecodeSettings.Builder.() -> Unit = {}): T = decode(value = getEncoded(field, serverTimestampBehavior), buildSettings)
-    public inline fun <T> get(field: String, strategy: DeserializationStrategy<T>, serverTimestampBehavior: ServerTimestampBehavior = ServerTimestampBehavior.NONE, buildSettings: DecodeSettings.Builder.() -> Unit = {}): T = decode(strategy, getEncoded(field, serverTimestampBehavior), buildSettings)
+    public override fun <T> get(field: String, strategy: DeserializationStrategy<T>, serverTimestampBehavior: ServerTimestampBehavior, buildSettings: DecodeSettings.Builder.() -> Unit): T = decode(strategy, getEncoded(field, serverTimestampBehavior), buildSettings)
 
     @PublishedApi
     internal fun getEncoded(field: String, serverTimestampBehavior: ServerTimestampBehavior = ServerTimestampBehavior.NONE): Any? = nativeWrapper.getEncoded(field, serverTimestampBehavior)
 
-    public inline fun <reified T> get(fieldPath: FieldPath, serverTimestampBehavior: ServerTimestampBehavior = ServerTimestampBehavior.NONE, buildSettings: DecodeSettings.Builder.() -> Unit = {}): T = decode(value = getEncoded(fieldPath, serverTimestampBehavior), buildSettings)
-    public inline fun <T> get(fieldPath: FieldPath, strategy: DeserializationStrategy<T>, serverTimestampBehavior: ServerTimestampBehavior = ServerTimestampBehavior.NONE, buildSettings: DecodeSettings.Builder.() -> Unit = {}): T = decode(strategy, getEncoded(fieldPath, serverTimestampBehavior), buildSettings)
+    public override fun <T> get(fieldPath: FieldPath, strategy: DeserializationStrategy<T>, serverTimestampBehavior: ServerTimestampBehavior, buildSettings: DecodeSettings.Builder.() -> Unit): T = decode(strategy, getEncoded(fieldPath, serverTimestampBehavior), buildSettings)
 
     @PublishedApi
     internal fun getEncoded(fieldPath: FieldPath, serverTimestampBehavior: ServerTimestampBehavior = ServerTimestampBehavior.NONE): Any? = nativeWrapper.getEncoded(fieldPath.encoded, serverTimestampBehavior)
 
-    public inline fun <reified T> data(serverTimestampBehavior: ServerTimestampBehavior = ServerTimestampBehavior.NONE, buildSettings: DecodeSettings.Builder.() -> Unit = {}): T = decode(encodedData(serverTimestampBehavior), buildSettings)
     public inline fun <T> data(strategy: DeserializationStrategy<T>, serverTimestampBehavior: ServerTimestampBehavior = ServerTimestampBehavior.NONE, buildSettings: DecodeSettings.Builder.() -> Unit = {}): T = decode(strategy, encodedData(serverTimestampBehavior), buildSettings)
 
     @PublishedApi

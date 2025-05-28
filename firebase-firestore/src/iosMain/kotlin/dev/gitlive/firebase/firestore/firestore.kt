@@ -200,7 +200,7 @@ public val QuerySnapshot.ios: FIRQuerySnapshot get() = ios
 
 public actual class QuerySnapshot(internal val ios: FIRQuerySnapshot) {
     public actual val documents: List<DocumentSnapshot>
-        get() = ios.documents.map { DocumentSnapshot(NativeDocumentSnapshotWrapper(it as FIRDocumentSnapshot)) }
+        get() = ios.documents.map { DocumentSnapshotImpl(NativeDocumentSnapshotWrapper(it as FIRDocumentSnapshot)) }
     public actual val documentChanges: List<DocumentChange>
         get() = ios.documentChanges.map { DocumentChange(it as FIRDocumentChange) }
     public actual val metadata: SnapshotMetadata get() = SnapshotMetadata(ios.metadata)
@@ -210,7 +210,7 @@ public val DocumentChange.ios: FIRDocumentChange get() = ios
 
 public actual class DocumentChange(internal val ios: FIRDocumentChange) {
     public actual val document: DocumentSnapshot
-        get() = DocumentSnapshot(NativeDocumentSnapshotWrapper(ios.document))
+        get() = DocumentSnapshotImpl(NativeDocumentSnapshotWrapper(ios.document))
     public actual val newIndex: Int
         get() = ios.newIndex.toInt()
     public actual val oldIndex: Int

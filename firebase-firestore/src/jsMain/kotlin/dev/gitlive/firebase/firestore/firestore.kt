@@ -151,7 +151,7 @@ public val QuerySnapshot.js: JsQuerySnapshot get() = js
 
 public actual class QuerySnapshot(internal val js: JsQuerySnapshot) {
     public actual val documents: List<DocumentSnapshot>
-        get() = js.docs.map { DocumentSnapshot(NativeDocumentSnapshotWrapper(it)) }
+        get() = js.docs.map { DocumentSnapshotImpl(NativeDocumentSnapshotWrapper(it)) }
     public actual val documentChanges: List<DocumentChange>
         get() = js.docChanges().map { DocumentChange(it) }
     public actual val metadata: SnapshotMetadata get() = SnapshotMetadata(js.metadata)
@@ -161,7 +161,7 @@ public val DocumentChange.js: JsDocumentChange get() = js
 
 public actual class DocumentChange(internal val js: JsDocumentChange) {
     public actual val document: DocumentSnapshot
-        get() = DocumentSnapshot(NativeDocumentSnapshotWrapper(js.doc))
+        get() = DocumentSnapshotImpl(NativeDocumentSnapshotWrapper(js.doc))
     public actual val newIndex: Int
         get() = js.newIndex
     public actual val oldIndex: Int
@@ -172,7 +172,7 @@ public actual class DocumentChange(internal val js: JsDocumentChange) {
 
 internal actual data class NativeDocumentSnapshot(val js: JsDocumentSnapshot)
 
-public operator fun DocumentSnapshot.Companion.invoke(js: JsDocumentSnapshot): DocumentSnapshot = DocumentSnapshot(NativeDocumentSnapshot(js))
+public operator fun DocumentSnapshot.Companion.invoke(js: JsDocumentSnapshot): DocumentSnapshot = DocumentSnapshotImpl(NativeDocumentSnapshot(js))
 public val DocumentSnapshot.js: dev.gitlive.firebase.firestore.externals.DocumentSnapshot get() = native.js
 
 public val SnapshotMetadata.js: dev.gitlive.firebase.firestore.externals.SnapshotMetadata get() = js
