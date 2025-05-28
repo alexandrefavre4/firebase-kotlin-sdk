@@ -61,36 +61,36 @@ public interface FirebaseFirestore {
 internal val FirebaseFirestore.native: NativeFirebaseFirestore
     get() = (this as FirebaseFirestoreImpl).native
 
-public class FirebaseFirestoreImpl internal constructor(private val wrapper: NativeFirebaseFirestoreWrapper) : FirebaseFirestore {
+internal class FirebaseFirestoreImpl internal constructor(private val wrapper: NativeFirebaseFirestoreWrapper) : FirebaseFirestore {
 
     internal constructor(native: NativeFirebaseFirestore) : this(NativeFirebaseFirestoreWrapper(native))
 
-    public override var settings: FirebaseFirestoreSettings
+    override var settings: FirebaseFirestoreSettings
         @Deprecated("Property can only be written.", level = DeprecationLevel.ERROR)
         get() = throw NotImplementedError()
         set(value) {
             wrapper.applySettings(value)
         }
 
-    public override fun collection(collectionPath: String): CollectionReference = CollectionReferenceImpl(wrapper.collection(collectionPath))
-    public override fun collectionGroup(collectionId: String): Query = QueryImpl(wrapper.collectionGroup(collectionId))
-    public override fun document(documentPath: String): DocumentReference = DocumentReferenceImpl(wrapper.document(documentPath))
-    public override fun batch(): WriteBatch = WriteBatchImpl(wrapper.batch())
-    public override fun setLoggingEnabled(loggingEnabled: Boolean) {
+    override fun collection(collectionPath: String): CollectionReference = CollectionReferenceImpl(wrapper.collection(collectionPath))
+    override fun collectionGroup(collectionId: String): Query = QueryImpl(wrapper.collectionGroup(collectionId))
+    override fun document(documentPath: String): DocumentReference = DocumentReferenceImpl(wrapper.document(documentPath))
+    override fun batch(): WriteBatch = WriteBatchImpl(wrapper.batch())
+    override fun setLoggingEnabled(loggingEnabled: Boolean) {
         wrapper.setLoggingEnabled(loggingEnabled)
     }
-    public suspend fun clearPersistence() {
+    suspend fun clearPersistence() {
         wrapper.clearPersistence()
     }
-    public suspend fun <T> runTransaction(func: suspend Transaction.() -> T): T = wrapper.runTransaction { func(TransactionImpl(this)) }
-    public override fun useEmulator(host: String, port: Int) {
+    suspend fun <T> runTransaction(func: suspend Transaction.() -> T): T = wrapper.runTransaction { func(TransactionImpl(this)) }
+    override fun useEmulator(host: String, port: Int) {
         wrapper.useEmulator(host, port)
     }
 
-    public override suspend fun disableNetwork() {
+    override suspend fun disableNetwork() {
         wrapper.disableNetwork()
     }
-    public override suspend fun enableNetwork() {
+    override suspend fun enableNetwork() {
         wrapper.enableNetwork()
     }
 }
@@ -205,32 +205,32 @@ public interface Transaction {
 internal val Transaction.native: NativeTransaction
     get() = (this as TransactionImpl).nativeWrapper.native
 
-public data class TransactionImpl internal constructor(internal val nativeWrapper: NativeTransactionWrapper) : Transaction {
+internal data class TransactionImpl internal constructor(internal val nativeWrapper: NativeTransactionWrapper) : Transaction {
 
     internal constructor(native: NativeTransaction) : this(NativeTransactionWrapper(native))
 
-    public override fun set(documentRef: DocumentReference, data: Any, merge: Boolean, buildSettings: EncodeSettings.Builder.() -> Unit): Transaction = setEncoded(documentRef, encodeAsObject(data, buildSettings), if (merge) SetOptions.Merge else SetOptions.Overwrite)
+    override fun set(documentRef: DocumentReference, data: Any, merge: Boolean, buildSettings: EncodeSettings.Builder.() -> Unit): Transaction = setEncoded(documentRef, encodeAsObject(data, buildSettings), if (merge) SetOptions.Merge else SetOptions.Overwrite)
 
-    public override fun set(documentRef: DocumentReference, data: Any, vararg mergeFields: String, buildSettings: EncodeSettings.Builder.() -> Unit): Transaction = setEncoded(documentRef, encodeAsObject(data, buildSettings), SetOptions.MergeFields(mergeFields.asList()))
+    override fun set(documentRef: DocumentReference, data: Any, vararg mergeFields: String, buildSettings: EncodeSettings.Builder.() -> Unit): Transaction = setEncoded(documentRef, encodeAsObject(data, buildSettings), SetOptions.MergeFields(mergeFields.asList()))
 
-    public override fun set(documentRef: DocumentReference, data: Any, vararg mergeFieldPaths: FieldPath, buildSettings: EncodeSettings.Builder.() -> Unit): Transaction = setEncoded(documentRef, encodeAsObject(data, buildSettings), SetOptions.MergeFieldPaths(mergeFieldPaths.asList()))
+    override fun set(documentRef: DocumentReference, data: Any, vararg mergeFieldPaths: FieldPath, buildSettings: EncodeSettings.Builder.() -> Unit): Transaction = setEncoded(documentRef, encodeAsObject(data, buildSettings), SetOptions.MergeFieldPaths(mergeFieldPaths.asList()))
 
-    public override fun <T : Any> set(documentRef: DocumentReference, strategy: SerializationStrategy<T>, data: T, merge: Boolean, buildSettings: EncodeSettings.Builder.() -> Unit): Transaction = setEncoded(documentRef, encodeAsObject(strategy, data, buildSettings), if (merge) SetOptions.Merge else SetOptions.Overwrite)
+    override fun <T : Any> set(documentRef: DocumentReference, strategy: SerializationStrategy<T>, data: T, merge: Boolean, buildSettings: EncodeSettings.Builder.() -> Unit): Transaction = setEncoded(documentRef, encodeAsObject(strategy, data, buildSettings), if (merge) SetOptions.Merge else SetOptions.Overwrite)
 
-    public override fun <T : Any> set(documentRef: DocumentReference, strategy: SerializationStrategy<T>, data: T, vararg mergeFields: String, buildSettings: EncodeSettings.Builder.() -> Unit): Transaction = setEncoded(documentRef, encodeAsObject(strategy, data, buildSettings), SetOptions.MergeFields(mergeFields.asList()))
+    override fun <T : Any> set(documentRef: DocumentReference, strategy: SerializationStrategy<T>, data: T, vararg mergeFields: String, buildSettings: EncodeSettings.Builder.() -> Unit): Transaction = setEncoded(documentRef, encodeAsObject(strategy, data, buildSettings), SetOptions.MergeFields(mergeFields.asList()))
 
-    public override fun <T : Any> set(documentRef: DocumentReference, strategy: SerializationStrategy<T>, data: T, vararg mergeFieldPaths: FieldPath, buildSettings: EncodeSettings.Builder.() -> Unit): Transaction = setEncoded(documentRef, encodeAsObject(strategy, data, buildSettings), SetOptions.MergeFieldPaths(mergeFieldPaths.asList()))
+    override fun <T : Any> set(documentRef: DocumentReference, strategy: SerializationStrategy<T>, data: T, vararg mergeFieldPaths: FieldPath, buildSettings: EncodeSettings.Builder.() -> Unit): Transaction = setEncoded(documentRef, encodeAsObject(strategy, data, buildSettings), SetOptions.MergeFieldPaths(mergeFieldPaths.asList()))
 
     @PublishedApi
     internal fun setEncoded(documentRef: DocumentReference, encodedData: EncodedObject, setOptions: SetOptions): Transaction = TransactionImpl(nativeWrapper.setEncoded(documentRef, encodedData, setOptions))
 
-    public override fun update(documentRef: DocumentReference, data: Any, buildSettings: EncodeSettings.Builder.() -> Unit): Transaction = updateEncoded(documentRef, encodeAsObject(data, buildSettings))
+    override fun update(documentRef: DocumentReference, data: Any, buildSettings: EncodeSettings.Builder.() -> Unit): Transaction = updateEncoded(documentRef, encodeAsObject(data, buildSettings))
 
-    public override fun <T : Any> update(documentRef: DocumentReference, strategy: SerializationStrategy<T>, data: T, buildSettings: EncodeSettings.Builder.() -> Unit): Transaction = updateEncoded(documentRef, encodeAsObject(strategy, data, buildSettings))
+    override fun <T : Any> update(documentRef: DocumentReference, strategy: SerializationStrategy<T>, data: T, buildSettings: EncodeSettings.Builder.() -> Unit): Transaction = updateEncoded(documentRef, encodeAsObject(strategy, data, buildSettings))
 
-    public override fun updateFields(documentRef: DocumentReference, vararg fieldsAndValues: Pair<String, Any?>, buildSettings: EncodeSettings.Builder.() -> Unit): Transaction = updateEncodedFieldsAndValues(documentRef, encodeFieldAndValue(fieldsAndValues, buildSettings).orEmpty())
+    override fun updateFields(documentRef: DocumentReference, vararg fieldsAndValues: Pair<String, Any?>, buildSettings: EncodeSettings.Builder.() -> Unit): Transaction = updateEncodedFieldsAndValues(documentRef, encodeFieldAndValue(fieldsAndValues, buildSettings).orEmpty())
 
-    public override fun updateFieldPaths(documentRef: DocumentReference, vararg fieldsAndValues: Pair<FieldPath, Any?>, buildSettings: EncodeSettings.Builder.() -> Unit): Transaction = updateEncodedFieldPathsAndValues(documentRef, encodeFieldAndValue(fieldsAndValues, buildSettings).orEmpty())
+    override fun updateFieldPaths(documentRef: DocumentReference, vararg fieldsAndValues: Pair<FieldPath, Any?>, buildSettings: EncodeSettings.Builder.() -> Unit): Transaction = updateEncodedFieldPathsAndValues(documentRef, encodeFieldAndValue(fieldsAndValues, buildSettings).orEmpty())
 
     @PublishedApi
     internal fun updateEncoded(documentRef: DocumentReference, encodedData: EncodedObject): Transaction = TransactionImpl(nativeWrapper.updateEncoded(documentRef, encodedData))
@@ -241,8 +241,8 @@ public data class TransactionImpl internal constructor(internal val nativeWrappe
     @PublishedApi
     internal fun updateEncodedFieldPathsAndValues(documentRef: DocumentReference, encodedFieldsAndValues: List<Pair<EncodedFieldPath, Any?>>): Transaction = TransactionImpl(nativeWrapper.updateEncodedFieldPathsAndValues(documentRef, encodedFieldsAndValues))
 
-    public override fun delete(documentRef: DocumentReference): Transaction = TransactionImpl(nativeWrapper.delete(documentRef))
-    public override suspend fun get(documentRef: DocumentReference): DocumentSnapshot = DocumentSnapshotImpl(nativeWrapper.get(documentRef))
+    override fun delete(documentRef: DocumentReference): Transaction = TransactionImpl(nativeWrapper.delete(documentRef))
+    override suspend fun get(documentRef: DocumentReference): DocumentSnapshot = DocumentSnapshotImpl(nativeWrapper.get(documentRef))
 }
 
 internal expect open class NativeQuery
@@ -270,29 +270,29 @@ public interface Query {
 internal val Query.native: NativeQuery
     get() = (this as QueryImpl).nativeQuery.native
 
-public open class QueryImpl internal constructor(internal val nativeQuery: NativeQueryWrapper) : Query {
+internal open class QueryImpl internal constructor(internal val nativeQuery: NativeQueryWrapper) : Query {
 
     internal constructor(native: NativeQuery) : this(NativeQueryWrapper(native))
 
-    public override fun limit(limit: Number): Query = QueryImpl(nativeQuery.limit(limit))
-    public override val snapshots: Flow<QuerySnapshot> = nativeQuery.snapshots
-    public override fun snapshots(includeMetadataChanges: Boolean): Flow<QuerySnapshot> = nativeQuery.snapshots(includeMetadataChanges)
-    public override suspend fun get(source: Source): QuerySnapshot = nativeQuery.get(source)
+    override fun limit(limit: Number): Query = QueryImpl(nativeQuery.limit(limit))
+    override val snapshots: Flow<QuerySnapshot> = nativeQuery.snapshots
+    override fun snapshots(includeMetadataChanges: Boolean): Flow<QuerySnapshot> = nativeQuery.snapshots(includeMetadataChanges)
+    override suspend fun get(source: Source): QuerySnapshot = nativeQuery.get(source)
 
-    public override fun where(builder: FilterBuilder.() -> Filter?): Query = builder(FilterBuilder())?.let { QueryImpl(nativeQuery.where(it)) } ?: this
+    override fun where(builder: FilterBuilder.() -> Filter?): Query = builder(FilterBuilder())?.let { QueryImpl(nativeQuery.where(it)) } ?: this
 
-    public override fun orderBy(field: String, direction: Direction): Query = QueryImpl(nativeQuery.orderBy(field, direction))
-    public override fun orderBy(field: FieldPath, direction: Direction): Query = QueryImpl(nativeQuery.orderBy(field.encoded, direction))
+    override fun orderBy(field: String, direction: Direction): Query = QueryImpl(nativeQuery.orderBy(field, direction))
+    override fun orderBy(field: FieldPath, direction: Direction): Query = QueryImpl(nativeQuery.orderBy(field.encoded, direction))
 
-    public fun startAfter(document: DocumentSnapshot): Query = QueryImpl(nativeQuery.startAfter(document.native))
-    public fun startAfter(vararg fieldValues: Any): Query = QueryImpl(nativeQuery.startAfter(*(fieldValues.map { it.safeValue }.toTypedArray())))
-    public fun startAt(document: DocumentSnapshot): Query = QueryImpl(nativeQuery.startAt(document.native))
-    public fun startAt(vararg fieldValues: Any): Query = QueryImpl(nativeQuery.startAt(*(fieldValues.map { it.safeValue }.toTypedArray())))
+    fun startAfter(document: DocumentSnapshot): Query = QueryImpl(nativeQuery.startAfter(document.native))
+    fun startAfter(vararg fieldValues: Any): Query = QueryImpl(nativeQuery.startAfter(*(fieldValues.map { it.safeValue }.toTypedArray())))
+    fun startAt(document: DocumentSnapshot): Query = QueryImpl(nativeQuery.startAt(document.native))
+    fun startAt(vararg fieldValues: Any): Query = QueryImpl(nativeQuery.startAt(*(fieldValues.map { it.safeValue }.toTypedArray())))
 
-    public override fun endBefore(document: DocumentSnapshot): Query = QueryImpl(nativeQuery.endBefore(document.native))
-    public override fun endBefore(vararg fieldValues: Any): Query = QueryImpl(nativeQuery.endBefore(*(fieldValues.map { it.safeValue }.toTypedArray())))
-    public override fun endAt(document: DocumentSnapshot): Query = QueryImpl(nativeQuery.endAt(document.native))
-    public override fun endAt(vararg fieldValues: Any): Query = QueryImpl(nativeQuery.endAt(*(fieldValues.map { it.safeValue }.toTypedArray())))
+    override fun endBefore(document: DocumentSnapshot): Query = QueryImpl(nativeQuery.endBefore(document.native))
+    override fun endBefore(vararg fieldValues: Any): Query = QueryImpl(nativeQuery.endBefore(*(fieldValues.map { it.safeValue }.toTypedArray())))
+    override fun endAt(document: DocumentSnapshot): Query = QueryImpl(nativeQuery.endAt(document.native))
+    override fun endAt(vararg fieldValues: Any): Query = QueryImpl(nativeQuery.endAt(*(fieldValues.map { it.safeValue }.toTypedArray())))
 }
 
 internal expect class NativeWriteBatch
@@ -321,28 +321,28 @@ public interface WriteBatch {
 internal val WriteBatch.native: NativeWriteBatch
     get() = (this as WriteBatchImpl).nativeWrapper.native
 
-public data class WriteBatchImpl internal constructor(internal val nativeWrapper: NativeWriteBatchWrapper) : WriteBatch {
+internal data class WriteBatchImpl internal constructor(internal val nativeWrapper: NativeWriteBatchWrapper) : WriteBatch {
 
     internal constructor(native: NativeWriteBatch) : this(NativeWriteBatchWrapper(native))
 
-    public override fun <T : Any> set(documentRef: DocumentReference, strategy: SerializationStrategy<T>, data: T, merge: Boolean, buildSettings: EncodeSettings.Builder.() -> Unit): WriteBatch =
+    override fun <T : Any> set(documentRef: DocumentReference, strategy: SerializationStrategy<T>, data: T, merge: Boolean, buildSettings: EncodeSettings.Builder.() -> Unit): WriteBatch =
         setEncoded(documentRef, encodeAsObject(strategy, data, buildSettings), if (merge) SetOptions.Merge else SetOptions.Overwrite)
 
-    public override fun <T : Any> set(documentRef: DocumentReference, strategy: SerializationStrategy<T>, data: T, vararg mergeFields: String, buildSettings: EncodeSettings.Builder.() -> Unit): WriteBatch =
+    override fun <T : Any> set(documentRef: DocumentReference, strategy: SerializationStrategy<T>, data: T, vararg mergeFields: String, buildSettings: EncodeSettings.Builder.() -> Unit): WriteBatch =
         setEncoded(documentRef, encodeAsObject(strategy, data, buildSettings), SetOptions.MergeFields(mergeFields.asList()))
 
-    public override fun <T : Any> set(documentRef: DocumentReference, strategy: SerializationStrategy<T>, data: T, vararg mergeFieldPaths: FieldPath, buildSettings: EncodeSettings.Builder.() -> Unit): WriteBatch =
+    override fun <T : Any> set(documentRef: DocumentReference, strategy: SerializationStrategy<T>, data: T, vararg mergeFieldPaths: FieldPath, buildSettings: EncodeSettings.Builder.() -> Unit): WriteBatch =
         setEncoded(documentRef, encodeAsObject(strategy, data, buildSettings), SetOptions.MergeFieldPaths(mergeFieldPaths.asList()))
 
     @PublishedApi
     internal fun setEncoded(documentRef: DocumentReference, encodedData: EncodedObject, setOptions: SetOptions): WriteBatch = WriteBatchImpl(nativeWrapper.setEncoded(documentRef, encodedData, setOptions))
 
-    public override fun <T : Any> update(documentRef: DocumentReference, strategy: SerializationStrategy<T>, data: T, buildSettings: EncodeSettings.Builder.() -> Unit): WriteBatch =
+    override fun <T : Any> update(documentRef: DocumentReference, strategy: SerializationStrategy<T>, data: T, buildSettings: EncodeSettings.Builder.() -> Unit): WriteBatch =
         updateEncoded(documentRef, encodeAsObject(strategy, data, buildSettings))
 
-    public override fun updateField(documentRef: DocumentReference, vararg fieldsAndValues: Pair<String, Any?>, buildSettings: EncodeSettings.Builder.() -> Unit): WriteBatch = updateEncodedFieldsAndValues(documentRef, encodeFieldAndValue(fieldsAndValues, buildSettings).orEmpty())
+    override fun updateField(documentRef: DocumentReference, vararg fieldsAndValues: Pair<String, Any?>, buildSettings: EncodeSettings.Builder.() -> Unit): WriteBatch = updateEncodedFieldsAndValues(documentRef, encodeFieldAndValue(fieldsAndValues, buildSettings).orEmpty())
 
-    public override fun updateFieldPath(documentRef: DocumentReference, vararg fieldsAndValues: Pair<FieldPath, Any?>, buildSettings: EncodeSettings.Builder.() -> Unit): WriteBatch = updateEncodedFieldPathsAndValues(documentRef, encodeFieldAndValue(fieldsAndValues, buildSettings).orEmpty())
+    override fun updateFieldPath(documentRef: DocumentReference, vararg fieldsAndValues: Pair<FieldPath, Any?>, buildSettings: EncodeSettings.Builder.() -> Unit): WriteBatch = updateEncodedFieldPathsAndValues(documentRef, encodeFieldAndValue(fieldsAndValues, buildSettings).orEmpty())
 
     @PublishedApi
     internal fun updateEncoded(documentRef: DocumentReference, encodedData: EncodedObject): WriteBatch = WriteBatchImpl(nativeWrapper.updateEncoded(documentRef, encodedData))
@@ -353,9 +353,9 @@ public data class WriteBatchImpl internal constructor(internal val nativeWrapper
     @PublishedApi
     internal fun updateEncodedFieldPathsAndValues(documentRef: DocumentReference, encodedFieldsAndValues: List<Pair<EncodedFieldPath, Any?>>): WriteBatch = WriteBatchImpl(nativeWrapper.updateEncodedFieldPathsAndValues(documentRef, encodedFieldsAndValues))
 
-    public override fun delete(documentRef: DocumentReference): WriteBatch = WriteBatchImpl(nativeWrapper.delete(documentRef))
+    override fun delete(documentRef: DocumentReference): WriteBatch = WriteBatchImpl(nativeWrapper.delete(documentRef))
 
-    public override suspend fun commit() {
+    override suspend fun commit() {
         nativeWrapper.commit()
     }
 }
@@ -396,34 +396,34 @@ internal val DocumentReference.native: NativeDocumentReference
 
 /** A class representing a Firebase DocumentReference. */
 @Serializable(with = DocumentReferenceSerializer::class)
-public data class DocumentReferenceImpl internal constructor(internal val native: NativeDocumentReference) : DocumentReference {
+internal data class DocumentReferenceImpl internal constructor(internal val native: NativeDocumentReference) : DocumentReference {
 
     internal constructor(native: NativeDocumentReferenceType) : this(NativeDocumentReference(native))
 
-    public override val id: String get() = native.id
-    public override val path: String get() = native.path
-    public override val snapshots: Flow<DocumentSnapshot> get() = native.snapshots.map(::DocumentSnapshotImpl)
-    public override val parent: CollectionReference get() = CollectionReferenceImpl(native.parent)
-    public override fun snapshots(includeMetadataChanges: Boolean): Flow<DocumentSnapshot> = native.snapshots(includeMetadataChanges).map(::DocumentSnapshotImpl)
+    override val id: String get() = native.id
+    override val path: String get() = native.path
+    override val snapshots: Flow<DocumentSnapshot> get() = native.snapshots.map(::DocumentSnapshotImpl)
+    override val parent: CollectionReference get() = CollectionReferenceImpl(native.parent)
+    override fun snapshots(includeMetadataChanges: Boolean): Flow<DocumentSnapshot> = native.snapshots(includeMetadataChanges).map(::DocumentSnapshotImpl)
 
-    public override fun collection(collectionPath: String): CollectionReference = CollectionReferenceImpl(native.collection(collectionPath))
-    public override suspend fun get(source: Source): DocumentSnapshot = DocumentSnapshotImpl(native.get(source))
+    override fun collection(collectionPath: String): CollectionReference = CollectionReferenceImpl(native.collection(collectionPath))
+    override suspend fun get(source: Source): DocumentSnapshot = DocumentSnapshotImpl(native.get(source))
 
-    public override suspend fun <T : Any> set(strategy: SerializationStrategy<T>, data: T, merge: Boolean, buildSettings: EncodeSettings.Builder.() -> Unit) {
+    override suspend fun <T : Any> set(strategy: SerializationStrategy<T>, data: T, merge: Boolean, buildSettings: EncodeSettings.Builder.() -> Unit) {
         setEncoded(
             encodeAsObject(strategy, data, buildSettings),
             if (merge) SetOptions.Merge else SetOptions.Overwrite,
         )
     }
 
-    public override suspend fun <T : Any> set(strategy: SerializationStrategy<T>, data: T, vararg mergeFields: String, buildSettings: EncodeSettings.Builder.() -> Unit) {
+    override suspend fun <T : Any> set(strategy: SerializationStrategy<T>, data: T, vararg mergeFields: String, buildSettings: EncodeSettings.Builder.() -> Unit) {
         setEncoded(
             encodeAsObject(strategy, data, buildSettings),
             SetOptions.MergeFields(mergeFields.asList()),
         )
     }
 
-    public override suspend fun <T : Any> set(strategy: SerializationStrategy<T>, data: T, vararg mergeFieldPaths: FieldPath, buildSettings: EncodeSettings.Builder.() -> Unit) {
+    override suspend fun <T : Any> set(strategy: SerializationStrategy<T>, data: T, vararg mergeFieldPaths: FieldPath, buildSettings: EncodeSettings.Builder.() -> Unit) {
         setEncoded(
             encodeAsObject(strategy, data, buildSettings),
             SetOptions.MergeFieldPaths(mergeFieldPaths.asList()),
@@ -435,7 +435,7 @@ public data class DocumentReferenceImpl internal constructor(internal val native
         native.setEncoded(encodedData, setOptions)
     }
 
-    public override suspend fun <T : Any> update(strategy: SerializationStrategy<T>, data: T, buildSettings: EncodeSettings.Builder.() -> Unit) {
+    override suspend fun <T : Any> update(strategy: SerializationStrategy<T>, data: T, buildSettings: EncodeSettings.Builder.() -> Unit) {
         updateEncoded(
             encodeAsObject(strategy, data, buildSettings),
         )
@@ -446,7 +446,7 @@ public data class DocumentReferenceImpl internal constructor(internal val native
         native.updateEncoded(encodedData)
     }
 
-    public override suspend fun updateFields(vararg fieldsAndValues: Pair<String, Any?>, buildSettings: EncodeSettings.Builder.() -> Unit) {
+    override suspend fun updateFields(vararg fieldsAndValues: Pair<String, Any?>, buildSettings: EncodeSettings.Builder.() -> Unit) {
         updateEncodedFieldsAndValues(
             encodeFieldAndValue(
                 fieldsAndValues,
@@ -460,7 +460,7 @@ public data class DocumentReferenceImpl internal constructor(internal val native
         native.updateEncodedFieldsAndValues(encodedFieldsAndValues)
     }
 
-    public override suspend fun updateFieldPaths(vararg fieldsAndValues: Pair<FieldPath, Any?>, buildSettings: EncodeSettings.Builder.() -> Unit) {
+    override suspend fun updateFieldPaths(vararg fieldsAndValues: Pair<FieldPath, Any?>, buildSettings: EncodeSettings.Builder.() -> Unit) {
         updateEncodedFieldPathsAndValues(
             encodeFieldAndValue(
                 fieldsAndValues,
@@ -474,7 +474,7 @@ public data class DocumentReferenceImpl internal constructor(internal val native
         native.updateEncodedFieldPathsAndValues(encodedFieldsAndValues)
     }
 
-    public override suspend fun delete() {
+    override suspend fun delete() {
         native.delete()
     }
 }
@@ -497,7 +497,7 @@ public interface CollectionReference : Query {
 internal val CollectionReference.native: NativeCollectionReference
     get() = (this as CollectionReferenceImpl).nativeWrapper.native
 
-public data class CollectionReferenceImpl internal constructor(internal val nativeWrapper: NativeCollectionReferenceWrapper) :
+internal data class CollectionReferenceImpl internal constructor(internal val nativeWrapper: NativeCollectionReferenceWrapper) :
     QueryImpl(nativeWrapper),
     CollectionReference {
 
@@ -507,9 +507,9 @@ public data class CollectionReferenceImpl internal constructor(internal val nati
     override val document: DocumentReference get() = DocumentReferenceImpl(nativeWrapper.document)
     override val parent: DocumentReference? get() = nativeWrapper.parent?.let(::DocumentReferenceImpl)
 
-    public override fun document(documentPath: String): DocumentReference = DocumentReferenceImpl(nativeWrapper.document(documentPath))
+    override fun document(documentPath: String): DocumentReference = DocumentReferenceImpl(nativeWrapper.document(documentPath))
 
-    public override suspend fun <T : Any> add(strategy: SerializationStrategy<T>, data: T, buildSettings: EncodeSettings.Builder.() -> Unit): DocumentReference = addEncoded(
+    override suspend fun <T : Any> add(strategy: SerializationStrategy<T>, data: T, buildSettings: EncodeSettings.Builder.() -> Unit): DocumentReference = addEncoded(
         encodeAsObject(strategy, data, buildSettings),
     )
 
@@ -587,7 +587,7 @@ public interface DocumentSnapshot {
 internal val DocumentSnapshot.native: NativeDocumentSnapshot
     get() = (this as DocumentSnapshotImpl).nativeWrapper.native
 
-public data class DocumentSnapshotImpl internal constructor(internal val nativeWrapper: NativeDocumentSnapshotWrapper): DocumentSnapshot {
+internal data class DocumentSnapshotImpl internal constructor(internal val nativeWrapper: NativeDocumentSnapshotWrapper): DocumentSnapshot {
 
     internal constructor(native: NativeDocumentSnapshot) : this(NativeDocumentSnapshotWrapper(native))
 
@@ -596,20 +596,20 @@ public data class DocumentSnapshotImpl internal constructor(internal val nativeW
     override val reference: DocumentReference get() = DocumentReferenceImpl(nativeWrapper.reference)
     override val metadata: SnapshotMetadata get() = nativeWrapper.metadata
 
-    public override fun contains(field: String): Boolean = nativeWrapper.contains(field)
-    public override fun contains(fieldPath: FieldPath): Boolean = nativeWrapper.contains(fieldPath.encoded)
+    override fun contains(field: String): Boolean = nativeWrapper.contains(field)
+    override fun contains(fieldPath: FieldPath): Boolean = nativeWrapper.contains(fieldPath.encoded)
 
-    public override fun <T> get(field: String, strategy: DeserializationStrategy<T>, serverTimestampBehavior: ServerTimestampBehavior, buildSettings: DecodeSettings.Builder.() -> Unit): T = decode(strategy, getEncoded(field, serverTimestampBehavior), buildSettings)
+    override fun <T> get(field: String, strategy: DeserializationStrategy<T>, serverTimestampBehavior: ServerTimestampBehavior, buildSettings: DecodeSettings.Builder.() -> Unit): T = decode(strategy, getEncoded(field, serverTimestampBehavior), buildSettings)
 
     @PublishedApi
     internal fun getEncoded(field: String, serverTimestampBehavior: ServerTimestampBehavior = ServerTimestampBehavior.NONE): Any? = nativeWrapper.getEncoded(field, serverTimestampBehavior)
 
-    public override fun <T> get(fieldPath: FieldPath, strategy: DeserializationStrategy<T>, serverTimestampBehavior: ServerTimestampBehavior, buildSettings: DecodeSettings.Builder.() -> Unit): T = decode(strategy, getEncoded(fieldPath, serverTimestampBehavior), buildSettings)
+    override fun <T> get(fieldPath: FieldPath, strategy: DeserializationStrategy<T>, serverTimestampBehavior: ServerTimestampBehavior, buildSettings: DecodeSettings.Builder.() -> Unit): T = decode(strategy, getEncoded(fieldPath, serverTimestampBehavior), buildSettings)
 
     @PublishedApi
     internal fun getEncoded(fieldPath: FieldPath, serverTimestampBehavior: ServerTimestampBehavior = ServerTimestampBehavior.NONE): Any? = nativeWrapper.getEncoded(fieldPath.encoded, serverTimestampBehavior)
 
-    public inline fun <T> data(strategy: DeserializationStrategy<T>, serverTimestampBehavior: ServerTimestampBehavior = ServerTimestampBehavior.NONE, buildSettings: DecodeSettings.Builder.() -> Unit = {}): T = decode(strategy, encodedData(serverTimestampBehavior), buildSettings)
+    inline fun <T> data(strategy: DeserializationStrategy<T>, serverTimestampBehavior: ServerTimestampBehavior = ServerTimestampBehavior.NONE, buildSettings: DecodeSettings.Builder.() -> Unit = {}): T = decode(strategy, encodedData(serverTimestampBehavior), buildSettings)
 
     @PublishedApi
     internal fun encodedData(serverTimestampBehavior: ServerTimestampBehavior = ServerTimestampBehavior.NONE): Any? = nativeWrapper.encodedData(serverTimestampBehavior)
