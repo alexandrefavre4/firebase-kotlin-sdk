@@ -220,6 +220,10 @@ public final class dev/gitlive/firebase/firestore/FilterBuilder {
 	public final fun or (Ldev/gitlive/firebase/firestore/Filter;Ldev/gitlive/firebase/firestore/Filter;)Ldev/gitlive/firebase/firestore/Filter$Or;
 }
 
+public final class dev/gitlive/firebase/firestore/FilterKt {
+	public static final fun filterBuilder (Lkotlin/jvm/functions/Function1;)Ldev/gitlive/firebase/firestore/Filter;
+}
+
 public abstract interface class dev/gitlive/firebase/firestore/FirebaseFirestore {
 	public static final field Companion Ldev/gitlive/firebase/firestore/FirebaseFirestore$Companion;
 	public abstract fun batch ()Ldev/gitlive/firebase/firestore/WriteBatch;

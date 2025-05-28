@@ -279,7 +279,7 @@ internal open class QueryImpl internal constructor(internal val nativeQuery: Nat
     override fun snapshots(includeMetadataChanges: Boolean): Flow<QuerySnapshot> = nativeQuery.snapshots(includeMetadataChanges)
     override suspend fun get(source: Source): QuerySnapshot = nativeQuery.get(source)
 
-    override fun where(builder: FilterBuilder.() -> Filter?): Query = builder(FilterBuilder())?.let { QueryImpl(nativeQuery.where(it)) } ?: this
+    override fun where(builder: FilterBuilder.() -> Filter?): Query = filterBuilder(builder)?.let { QueryImpl(nativeQuery.where(it)) } ?: this
 
     override fun orderBy(field: String, direction: Direction): Query = QueryImpl(nativeQuery.orderBy(field, direction))
     override fun orderBy(field: FieldPath, direction: Direction): Query = QueryImpl(nativeQuery.orderBy(field.encoded, direction))

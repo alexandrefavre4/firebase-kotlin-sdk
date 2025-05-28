@@ -41,6 +41,8 @@ public sealed class Filter {
     public data class Path internal constructor(val path: FieldPath, override val constraint: WhereConstraint) : WithConstraint()
 }
 
+public fun filterBuilder(block: FilterBuilder.() -> Filter?): Filter? = block(FilterBuilder())
+
 public class FilterBuilder internal constructor() {
 
     public infix fun String.equalTo(value: Any?): Filter.WithConstraint = Filter.Field(this, WhereConstraint.EqualTo(value))
