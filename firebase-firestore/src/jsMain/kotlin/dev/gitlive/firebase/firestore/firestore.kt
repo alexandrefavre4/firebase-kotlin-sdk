@@ -149,24 +149,24 @@ public actual val FirebaseFirestoreException.code: FirestoreExceptionCode get() 
 
 public val QuerySnapshot.js: JsQuerySnapshot get() = js
 
-public actual class QuerySnapshot(internal val js: JsQuerySnapshot) {
-    public actual val documents: List<DocumentSnapshot>
+public actual class QuerySnapshotImpl(internal val js: JsQuerySnapshot) : QuerySnapshot {
+    public actual override val documents: List<DocumentSnapshot>
         get() = js.docs.map { DocumentSnapshotImpl(NativeDocumentSnapshotWrapper(it)) }
-    public actual val documentChanges: List<DocumentChange>
-        get() = js.docChanges().map { DocumentChange(it) }
-    public actual val metadata: SnapshotMetadata get() = SnapshotMetadata(js.metadata)
+    public actual override val documentChanges: List<DocumentChange>
+        get() = js.docChanges().map { DocumentChangeImpl(it) }
+    public actual override val metadata: SnapshotMetadata get() = SnapshotMetadata(js.metadata)
 }
 
 public val DocumentChange.js: JsDocumentChange get() = js
 
-public actual class DocumentChange(internal val js: JsDocumentChange) {
-    public actual val document: DocumentSnapshot
+internal actual class DocumentChangeImpl(internal val js: JsDocumentChange) : DocumentChange {
+    actual override val document: DocumentSnapshot
         get() = DocumentSnapshotImpl(NativeDocumentSnapshotWrapper(js.doc))
-    public actual val newIndex: Int
+    actual override val newIndex: Int
         get() = js.newIndex
-    public actual val oldIndex: Int
+    actual override val oldIndex: Int
         get() = js.oldIndex
-    public actual val type: ChangeType
+    actual override val type: ChangeType
         get() = ChangeType.entries.first { it.jsString == js.type }
 }
 

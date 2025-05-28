@@ -148,24 +148,24 @@ public actual typealias FirestoreExceptionCode = AndroidFirebaseFirestoreExcepti
 
 public val QuerySnapshot.android: AndroidQuerySnapshot get() = android
 
-public actual class QuerySnapshot(internal val android: AndroidQuerySnapshot) {
-    public actual val documents: List<DocumentSnapshot>
+internal actual class QuerySnapshotImpl(internal val android: AndroidQuerySnapshot) : QuerySnapshot {
+    actual override val documents: List<DocumentSnapshot>
         get() = android.documents.map { DocumentSnapshotImpl(NativeDocumentSnapshotWrapper(it)) }
-    public actual val documentChanges: List<DocumentChange>
-        get() = android.documentChanges.map { DocumentChange(it) }
-    public actual val metadata: SnapshotMetadata get() = SnapshotMetadata(android.metadata)
+    actual override val documentChanges: List<DocumentChange>
+        get() = android.documentChanges.map { DocumentChangeImpl(it) }
+    actual override val metadata: SnapshotMetadata get() = SnapshotMetadata(android.metadata)
 }
 
 public val DocumentChange.android: AndroidDocumentChange get() = android
 
-public actual class DocumentChange(internal val android: AndroidDocumentChange) {
-    public actual val document: DocumentSnapshot
+internal actual class DocumentChangeImpl(internal val android: AndroidDocumentChange) : DocumentChange {
+    actual override val document: DocumentSnapshot
         get() = DocumentSnapshotImpl(NativeDocumentSnapshotWrapper(android.document))
-    public actual val newIndex: Int
+    actual override val newIndex: Int
         get() = android.newIndex
-    public actual val oldIndex: Int
+    actual override val oldIndex: Int
         get() = android.oldIndex
-    public actual val type: ChangeType
+    actual override val type: ChangeType
         get() = android.type
 }
 

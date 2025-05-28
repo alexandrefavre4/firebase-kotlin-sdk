@@ -198,24 +198,24 @@ public fun NSError.toException(): FirebaseFirestoreException = when (domain) {
 
 public val QuerySnapshot.ios: FIRQuerySnapshot get() = ios
 
-public actual class QuerySnapshot(internal val ios: FIRQuerySnapshot) {
-    public actual val documents: List<DocumentSnapshot>
+internal actual class QuerySnapshotImpl(internal val ios: FIRQuerySnapshot) : QuerySnapshot {
+    actual override val documents: List<DocumentSnapshot>
         get() = ios.documents.map { DocumentSnapshotImpl(NativeDocumentSnapshotWrapper(it as FIRDocumentSnapshot)) }
-    public actual val documentChanges: List<DocumentChange>
-        get() = ios.documentChanges.map { DocumentChange(it as FIRDocumentChange) }
-    public actual val metadata: SnapshotMetadata get() = SnapshotMetadata(ios.metadata)
+    actual override val documentChanges: List<DocumentChange>
+        get() = ios.documentChanges.map { DocumentChangeImpl(it as FIRDocumentChange) }
+    actual override val metadata: SnapshotMetadata get() = SnapshotMetadata(ios.metadata)
 }
 
 public val DocumentChange.ios: FIRDocumentChange get() = ios
 
-public actual class DocumentChange(internal val ios: FIRDocumentChange) {
-    public actual val document: DocumentSnapshot
+internal actual class DocumentChangeImpl(internal val ios: FIRDocumentChange) : DocumentChange {
+    actual override val document: DocumentSnapshot
         get() = DocumentSnapshotImpl(NativeDocumentSnapshotWrapper(ios.document))
-    public actual val newIndex: Int
+    actual override val newIndex: Int
         get() = ios.newIndex.toInt()
-    public actual val oldIndex: Int
+    actual override val oldIndex: Int
         get() = ios.oldIndex.toInt()
-    public actual val type: ChangeType
+    actual override val type: ChangeType
         get() = ChangeType.entries.first { it.ios == ios.type }
 }
 

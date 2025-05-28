@@ -546,10 +546,16 @@ public expect enum class Direction {
     DESCENDING,
 }
 
-public expect class QuerySnapshot {
+public interface QuerySnapshot {
     public val documents: List<DocumentSnapshot>
     public val documentChanges: List<DocumentChange>
     public val metadata: SnapshotMetadata
+}
+
+internal expect class QuerySnapshotImpl : QuerySnapshot {
+    override val documents: List<DocumentSnapshot>
+    override val documentChanges: List<DocumentChange>
+    override val metadata: SnapshotMetadata
 }
 
 public expect enum class ChangeType {
@@ -558,11 +564,18 @@ public expect enum class ChangeType {
     REMOVED,
 }
 
-public expect class DocumentChange {
+public interface DocumentChange {
     public val document: DocumentSnapshot
     public val newIndex: Int
     public val oldIndex: Int
     public val type: ChangeType
+}
+
+internal expect class DocumentChangeImpl : DocumentChange {
+    override val document: DocumentSnapshot
+    override val newIndex: Int
+    override val oldIndex: Int
+    override val type: ChangeType
 }
 
 internal expect class NativeDocumentSnapshot

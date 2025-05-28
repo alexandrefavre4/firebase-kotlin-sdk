@@ -31,12 +31,11 @@ public final class dev/gitlive/firebase/firestore/CollectionReference$DefaultImp
 	public static synthetic fun add$default (Ldev/gitlive/firebase/firestore/CollectionReference;Lkotlinx/serialization/SerializationStrategy;Ljava/lang/Object;Lkotlin/jvm/functions/Function1;Lkotlin/coroutines/Continuation;ILjava/lang/Object;)Ljava/lang/Object;
 }
 
-public final class dev/gitlive/firebase/firestore/DocumentChange {
-	public fun <init> (Lcom/google/firebase/firestore/DocumentChange;)V
-	public final fun getDocument ()Ldev/gitlive/firebase/firestore/DocumentSnapshot;
-	public final fun getNewIndex ()I
-	public final fun getOldIndex ()I
-	public final fun getType ()Lcom/google/firebase/firestore/DocumentChange$Type;
+public abstract interface class dev/gitlive/firebase/firestore/DocumentChange {
+	public abstract fun getDocument ()Ldev/gitlive/firebase/firestore/DocumentSnapshot;
+	public abstract fun getNewIndex ()I
+	public abstract fun getOldIndex ()I
+	public abstract fun getType ()Lcom/google/firebase/firestore/DocumentChange$Type;
 }
 
 public abstract interface class dev/gitlive/firebase/firestore/DocumentReference {
@@ -410,11 +409,10 @@ public final class dev/gitlive/firebase/firestore/Query$DefaultImpls {
 	public static synthetic fun snapshots$default (Ldev/gitlive/firebase/firestore/Query;ZILjava/lang/Object;)Lkotlinx/coroutines/flow/Flow;
 }
 
-public final class dev/gitlive/firebase/firestore/QuerySnapshot {
-	public fun <init> (Lcom/google/firebase/firestore/QuerySnapshot;)V
-	public final fun getDocumentChanges ()Ljava/util/List;
-	public final fun getDocuments ()Ljava/util/List;
-	public final fun getMetadata ()Ldev/gitlive/firebase/firestore/SnapshotMetadata;
+public abstract interface class dev/gitlive/firebase/firestore/QuerySnapshot {
+	public abstract fun getDocumentChanges ()Ljava/util/List;
+	public abstract fun getDocuments ()Ljava/util/List;
+	public abstract fun getMetadata ()Ldev/gitlive/firebase/firestore/SnapshotMetadata;
 }
 
 public final class dev/gitlive/firebase/firestore/ServerTimestampBehavior : java/lang/Enum {

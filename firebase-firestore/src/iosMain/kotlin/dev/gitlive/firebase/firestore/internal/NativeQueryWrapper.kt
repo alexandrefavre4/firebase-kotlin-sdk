@@ -7,11 +7,13 @@ import dev.gitlive.firebase.firestore.Filter
 import dev.gitlive.firebase.firestore.NativeDocumentSnapshot
 import dev.gitlive.firebase.firestore.NativeQuery
 import dev.gitlive.firebase.firestore.QuerySnapshot
+import dev.gitlive.firebase.firestore.QuerySnapshotImpl
 import dev.gitlive.firebase.firestore.Source
 import dev.gitlive.firebase.firestore.WhereConstraint
 import dev.gitlive.firebase.firestore.awaitResult
 import dev.gitlive.firebase.firestore.toException
 import kotlinx.coroutines.channels.awaitClose
+import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.callbackFlow
 import platform.Foundation.NSNull
 
@@ -19,21 +21,21 @@ internal actual open class NativeQueryWrapper internal actual constructor(actual
 
     actual fun limit(limit: Number) = native.queryLimitedTo(limit.toLong())
 
-    actual suspend fun get(source: Source) =
-        QuerySnapshot(awaitResult { native.getDocumentsWithSource(source.toIosSource(), it) })
+    actual suspend fun get(source: Source): QuerySnapshot =
+        QuerySnapshotImpl(awaitResult { native.getDocumentsWithSource(source.toIosSource(), it) })
 
-    actual val snapshots get() = callbackFlow {
+    actual val snapshots: Flow<QuerySnapshot> get() = callbackFlow {
         val listener = native.addSnapshotListener { snapshot, error ->
-            snapshot?.let { trySend(QuerySnapshot(snapshot)) }
+            snapshot?.let { trySend(QuerySnapshotImpl(snapshot)) }
             error?.let { close(error.toException()) }
         }
         awaitClose { listener.remove() }
     }
 
-    actual fun snapshots(includeMetadataChanges: Boolean) = callbackFlow {
+    actual fun snapshots(includeMetadataChanges: Boolean): Flow<QuerySnapshot> = callbackFlow {
         val listener =
             native.addSnapshotListenerWithIncludeMetadataChanges(includeMetadataChanges) { snapshot, error ->
-                snapshot?.let { trySend(QuerySnapshot(snapshot)) }
+                snapshot?.let { trySend(QuerySnapshotImpl(snapshot)) }
                 error?.let { close(error.toException()) }
             }
         awaitClose { listener.remove() }

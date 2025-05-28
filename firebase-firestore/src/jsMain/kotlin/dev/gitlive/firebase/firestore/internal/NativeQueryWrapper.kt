@@ -6,6 +6,7 @@ import dev.gitlive.firebase.firestore.Filter
 import dev.gitlive.firebase.firestore.NativeDocumentSnapshot
 import dev.gitlive.firebase.firestore.NativeQuery
 import dev.gitlive.firebase.firestore.QuerySnapshot
+import dev.gitlive.firebase.firestore.QuerySnapshotImpl
 import dev.gitlive.firebase.firestore.Source
 import dev.gitlive.firebase.firestore.WhereConstraint
 import dev.gitlive.firebase.firestore.errorToException
@@ -22,6 +23,7 @@ import dev.gitlive.firebase.firestore.rethrow
 import dev.gitlive.firebase.firestore.wrapped
 import kotlinx.coroutines.await
 import kotlinx.coroutines.channels.awaitClose
+import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.callbackFlow
 import kotlin.js.json
 
@@ -31,7 +33,7 @@ internal actual open class NativeQueryWrapper internal actual constructor(actual
 
     open val js: Query get() = native.js
 
-    actual suspend fun get(source: Source) = rethrow { QuerySnapshot(js.get(source).await()) }
+    actual suspend fun get(source: Source): QuerySnapshot = rethrow { QuerySnapshotImpl(js.get(source).await()) }
 
     actual fun limit(limit: Number) = query(
         js,
@@ -138,23 +140,23 @@ internal actual open class NativeQueryWrapper internal actual constructor(actual
         ).wrapped
     }
 
-    actual val snapshots get() = callbackFlow {
+    actual val snapshots: Flow<QuerySnapshot> get() = callbackFlow {
         val unsubscribe = rethrow {
             onSnapshot(
                 js,
-                { trySend(QuerySnapshot(it)) },
+                { trySend(QuerySnapshotImpl(it)) },
                 { close(errorToException(it)) },
             )
         }
         awaitClose { rethrow { unsubscribe() } }
     }
 
-    actual fun snapshots(includeMetadataChanges: Boolean) = callbackFlow {
+    actual fun snapshots(includeMetadataChanges: Boolean): Flow<QuerySnapshot> = callbackFlow {
         val unsubscribe = rethrow {
             onSnapshot(
                 js,
                 json("includeMetadataChanges" to includeMetadataChanges),
-                { trySend(QuerySnapshot(it)) },
+                { trySend(QuerySnapshotImpl(it)) },
                 { close(errorToException(it)) },
             )
         }

@@ -9,10 +9,12 @@ import dev.gitlive.firebase.firestore.EncodedFieldPath
 import dev.gitlive.firebase.firestore.Filter
 import dev.gitlive.firebase.firestore.NativeDocumentSnapshot
 import dev.gitlive.firebase.firestore.QuerySnapshot
+import dev.gitlive.firebase.firestore.QuerySnapshotImpl
 import dev.gitlive.firebase.firestore.Source
 import dev.gitlive.firebase.firestore.WhereConstraint
 import kotlinx.coroutines.channels.ProducerScope
 import kotlinx.coroutines.channels.awaitClose
+import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.callbackFlow
 import kotlinx.coroutines.tasks.await
 
@@ -20,26 +22,26 @@ internal actual open class NativeQueryWrapper internal actual constructor(actual
 
     actual fun limit(limit: Number) = native.limit(limit.toLong())
 
-    actual val snapshots get() = callbackFlow {
+    actual val snapshots get(): Flow<QuerySnapshot> = callbackFlow {
         val listener = native.addSnapshotListener { snapshot, exception ->
-            snapshot?.let { trySend(QuerySnapshot(snapshot)) }
+            snapshot?.let { trySend(QuerySnapshotImpl(snapshot)) }
             exception?.let { close(exception) }
         }
         awaitClose { listener.remove() }
     }
 
-    actual fun snapshots(includeMetadataChanges: Boolean) = callbackFlow {
+    actual fun snapshots(includeMetadataChanges: Boolean): Flow<QuerySnapshot> = callbackFlow {
         val metadataChanges =
             if (includeMetadataChanges) MetadataChanges.INCLUDE else MetadataChanges.EXCLUDE
         val listener = native.addSnapshotListener(metadataChanges) { snapshot, exception ->
-            snapshot?.let { trySend(QuerySnapshot(snapshot)) }
+            snapshot?.let { trySend(QuerySnapshotImpl(snapshot)) }
             exception?.let { close(exception) }
         }
         awaitClose { listener.remove() }
     }
 
     actual suspend fun get(source: Source): QuerySnapshot =
-        QuerySnapshot(native.get(source.toAndroidSource()).await())
+        QuerySnapshotImpl(native.get(source.toAndroidSource()).await())
 
     actual fun where(filter: Filter) = native.where(filter.toAndroidFilter())
 
