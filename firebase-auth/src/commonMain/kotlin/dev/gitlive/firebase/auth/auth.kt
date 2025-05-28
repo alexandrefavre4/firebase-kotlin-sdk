@@ -38,7 +38,7 @@ public interface FirebaseAuth {
     public fun useEmulator(host: String, port: Int)
 }
 
-internal expect class FirebaseAuthImpl: FirebaseAuth {
+internal expect class FirebaseAuthImpl : FirebaseAuth {
     override val currentUser: FirebaseUser?
     override val authStateChanged: Flow<FirebaseUser?>
     override val idTokenChanged: Flow<FirebaseUser?>
@@ -67,7 +67,7 @@ public interface AuthResult {
     public val additionalUserInfo: AdditionalUserInfo?
 }
 
-internal expect class AuthResultImpl: AuthResult {
+internal expect class AuthResultImpl : AuthResult {
     override val user: FirebaseUser?
     override val credential: AuthCredential?
     override val additionalUserInfo: AdditionalUserInfo?
@@ -80,7 +80,7 @@ public interface AdditionalUserInfo {
     public val isNewUser: Boolean
 }
 
-internal expect class AdditionalUserInfoImpl: AdditionalUserInfo {
+internal expect class AdditionalUserInfoImpl : AdditionalUserInfo {
     override val providerId: String?
     override val username: String?
     override val profile: Map<String, Any?>?
@@ -93,7 +93,7 @@ public interface AuthTokenResult {
     public val token: String?
 }
 
-internal expect class AuthTokenResultImpl: AuthTokenResult {
+internal expect class AuthTokenResultImpl : AuthTokenResult {
 //    val authTimestamp: Long
     override val claims: Map<String, Any>
 

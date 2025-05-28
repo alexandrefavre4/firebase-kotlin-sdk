@@ -587,7 +587,7 @@ public interface DocumentSnapshot {
 internal val DocumentSnapshot.native: NativeDocumentSnapshot
     get() = (this as DocumentSnapshotImpl).nativeWrapper.native
 
-internal data class DocumentSnapshotImpl internal constructor(internal val nativeWrapper: NativeDocumentSnapshotWrapper): DocumentSnapshot {
+internal data class DocumentSnapshotImpl internal constructor(internal val nativeWrapper: NativeDocumentSnapshotWrapper) : DocumentSnapshot {
 
     internal constructor(native: NativeDocumentSnapshot) : this(NativeDocumentSnapshotWrapper(native))
 

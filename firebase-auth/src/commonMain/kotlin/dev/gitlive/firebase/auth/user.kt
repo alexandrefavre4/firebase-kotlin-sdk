@@ -81,7 +81,7 @@ public interface UserMetaData {
     public val lastSignInTime: Double?
 }
 
-internal expect class UserMetaDataImpl: UserMetaData {
+internal expect class UserMetaDataImpl : UserMetaData {
     override val creationTime: Double?
     override val lastSignInTime: Double?
 }

@@ -8,7 +8,7 @@ import kotlin.js.json
 
 public val FirebaseUser.js: User get() = js
 
-internal actual class FirebaseUserImpl internal constructor(internal val js: User): FirebaseUser {
+internal actual class FirebaseUserImpl internal constructor(internal val js: User) : FirebaseUser {
     actual override val uid: String
         get() = rethrow { js.uid }
     actual override val displayName: String?
@@ -58,7 +58,7 @@ internal actual class FirebaseUserImpl internal constructor(internal val js: Use
 
 public val UserInfo.js: UserInfo get() = js
 
-internal actual class UserInfoImpl(internal val js: JsUserInfo): UserInfo {
+internal actual class UserInfoImpl(internal val js: JsUserInfo) : UserInfo {
     actual override val displayName: String?
         get() = rethrow { js.displayName }
     actual override val email: String?
@@ -75,7 +75,7 @@ internal actual class UserInfoImpl(internal val js: JsUserInfo): UserInfo {
 
 public val UserMetaData.js: UserMetaData get() = js
 
-internal actual class UserMetaDataImpl(internal val js: UserMetadata): UserMetaData {
+internal actual class UserMetaDataImpl(internal val js: UserMetadata) : UserMetaData {
     actual override val creationTime: Double?
         get() = rethrow { js.creationTime?.let { (Date(it).getTime() / 1000.0) } }
     actual override val lastSignInTime: Double?

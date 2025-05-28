@@ -115,7 +115,7 @@ internal actual class FirebaseAuthImpl internal constructor(internal val android
 
 public val AuthResult.android: com.google.firebase.auth.AuthResult get() = android
 
-internal actual class AuthResultImpl(internal val android: com.google.firebase.auth.AuthResult): AuthResult {
+internal actual class AuthResultImpl(internal val android: com.google.firebase.auth.AuthResult) : AuthResult {
     actual override val user: FirebaseUser?
         get() = android.user?.let { FirebaseUserImpl(it) }
     actual override val credential: AuthCredential?
@@ -129,7 +129,7 @@ public val AdditionalUserInfo.android: com.google.firebase.auth.AdditionalUserIn
 
 internal actual class AdditionalUserInfoImpl(
     internal val android: com.google.firebase.auth.AdditionalUserInfo,
-): AdditionalUserInfo {
+) : AdditionalUserInfo {
     actual override val providerId: String?
         get() = android.providerId
     actual override val username: String?
@@ -142,7 +142,7 @@ internal actual class AdditionalUserInfoImpl(
 
 public val AuthTokenResult.android: com.google.firebase.auth.GetTokenResult get() = android
 
-internal actual class AuthTokenResultImpl(internal val android: com.google.firebase.auth.GetTokenResult): AuthTokenResult {
+internal actual class AuthTokenResultImpl(internal val android: com.google.firebase.auth.GetTokenResult) : AuthTokenResult {
 //    actual val authTimestamp: Long
 //        get() = android.authTimestamp
     actual override val claims: Map<String, Any>

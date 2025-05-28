@@ -104,7 +104,7 @@ internal actual class FirebaseAuthImpl internal constructor(internal val ios: FI
 
 public val AuthResult.ios: FIRAuthDataResult get() = ios
 
-internal actual class AuthResultImpl(internal val ios: FIRAuthDataResult): AuthResult {
+internal actual class AuthResultImpl(internal val ios: FIRAuthDataResult) : AuthResult {
     actual override val user: FirebaseUser?
         get() = FirebaseUserImpl(ios.user())
     actual override val credential: AuthCredential?
@@ -117,7 +117,7 @@ public val AdditionalUserInfo.ios: FIRAdditionalUserInfo get() = ios
 
 internal actual class AdditionalUserInfoImpl(
     internal val ios: FIRAdditionalUserInfo,
-): AdditionalUserInfo {
+) : AdditionalUserInfo {
     actual override val providerId: String?
         get() = ios.providerID()
     actual override val username: String?
@@ -137,7 +137,7 @@ internal actual class AdditionalUserInfoImpl(
 }
 
 public val AuthTokenResult.ios: FIRAuthTokenResult get() = ios
-internal actual class AuthTokenResultImpl(internal val ios: FIRAuthTokenResult): AuthTokenResult{
+internal actual class AuthTokenResultImpl(internal val ios: FIRAuthTokenResult) : AuthTokenResult {
 //    actual val authTimestamp: Long
 //        get() = ios.authDate
     actual override val claims: Map<String, Any>

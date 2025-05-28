@@ -12,7 +12,7 @@ import platform.Foundation.NSURL
 
 public val FirebaseUser.ios: FIRUser get() = ios
 
-internal actual class FirebaseUserImpl internal constructor(internal val ios: FIRUser): FirebaseUser {
+internal actual class FirebaseUserImpl internal constructor(internal val ios: FIRUser) : FirebaseUser {
     actual override val uid: String
         get() = ios.uid()
     actual override val displayName: String?
@@ -82,7 +82,7 @@ internal actual class FirebaseUserImpl internal constructor(internal val ios: FI
 
 public val UserInfo.ios: FIRUserInfoProtocol get() = ios
 
-internal actual class UserInfoImpl(internal val ios: FIRUserInfoProtocol): UserInfo {
+internal actual class UserInfoImpl(internal val ios: FIRUserInfoProtocol) : UserInfo {
     actual override val displayName: String?
         get() = ios.displayName()
     actual override val email: String?
@@ -99,7 +99,7 @@ internal actual class UserInfoImpl(internal val ios: FIRUserInfoProtocol): UserI
 
 public val UserMetaData.ios: FIRUserMetadata get() = ios
 
-internal actual class UserMetaDataImpl(internal val ios: FIRUserMetadata): UserMetaData {
+internal actual class UserMetaDataImpl(internal val ios: FIRUserMetadata) : UserMetaData {
     actual override val creationTime: Double?
         get() = ios.creationDate()?.timeIntervalSinceReferenceDate
     actual override val lastSignInTime: Double?

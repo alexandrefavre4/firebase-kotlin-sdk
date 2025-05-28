@@ -10,7 +10,7 @@ import kotlinx.coroutines.tasks.await
 
 public val FirebaseUser.android: com.google.firebase.auth.FirebaseUser get() = android
 
-internal actual class FirebaseUserImpl internal constructor(internal val android: com.google.firebase.auth.FirebaseUser): FirebaseUser {
+internal actual class FirebaseUserImpl internal constructor(internal val android: com.google.firebase.auth.FirebaseUser) : FirebaseUser {
     actual override val uid: String
         get() = android.uid
     actual override val displayName: String?
@@ -72,7 +72,7 @@ internal actual class FirebaseUserImpl internal constructor(internal val android
 
 public val UserInfo.android: com.google.firebase.auth.UserInfo get() = android
 
-internal actual class UserInfoImpl(internal val android: com.google.firebase.auth.UserInfo): UserInfo {
+internal actual class UserInfoImpl(internal val android: com.google.firebase.auth.UserInfo) : UserInfo {
     actual override val displayName: String?
         get() = android.displayName
     actual override val email: String?
@@ -89,7 +89,7 @@ internal actual class UserInfoImpl(internal val android: com.google.firebase.aut
 
 public val UserMetaData.android: com.google.firebase.auth.FirebaseUserMetadata get() = android
 
-internal actual class UserMetaDataImpl(internal val android: com.google.firebase.auth.FirebaseUserMetadata): UserMetaData {
+internal actual class UserMetaDataImpl(internal val android: com.google.firebase.auth.FirebaseUserMetadata) : UserMetaData {
     actual override val creationTime: Double?
         get() = android.creationTimestamp.toDouble()
     actual override val lastSignInTime: Double?

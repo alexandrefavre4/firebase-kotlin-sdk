@@ -14,7 +14,6 @@ import dev.gitlive.firebase.auth.externals.applyActionCode
 import dev.gitlive.firebase.auth.externals.confirmPasswordReset
 import dev.gitlive.firebase.auth.externals.createUserWithEmailAndPassword
 import dev.gitlive.firebase.auth.externals.sendPasswordResetEmail
-import dev.gitlive.firebase.auth.externals.fetchSignInMethodsForEmail
 import dev.gitlive.firebase.auth.externals.sendSignInLinkToEmail
 import dev.gitlive.firebase.auth.externals.isSignInWithEmailLink
 import dev.gitlive.firebase.auth.externals.signInWithEmailAndPassword
@@ -46,7 +45,7 @@ public actual fun Firebase.auth(app: FirebaseApp): FirebaseAuth =
 
 public val FirebaseAuth.js: Auth get() = js
 
-internal actual class FirebaseAuthImpl internal constructor(internal val js: Auth): FirebaseAuth {
+internal actual class FirebaseAuthImpl internal constructor(internal val js: Auth) : FirebaseAuth {
 
     actual override val currentUser: FirebaseUser?
         get() = rethrow { js.currentUser?.let { FirebaseUserImpl(it) } }
@@ -133,7 +132,7 @@ internal actual class FirebaseAuthImpl internal constructor(internal val js: Aut
 
 public val AuthResult.js: JsAuthResult get() = js
 
-internal actual class AuthResultImpl(internal val js: JsAuthResult): AuthResult{
+internal actual class AuthResultImpl(internal val js: JsAuthResult) : AuthResult {
     actual override val user: FirebaseUser?
         get() = rethrow { js.user?.let { FirebaseUserImpl(it) } }
     actual override val credential: AuthCredential?
@@ -146,7 +145,7 @@ public val AdditionalUserInfo.js: JsAdditionalUserInfo get() = js
 
 internal actual class AdditionalUserInfoImpl(
     internal val js: JsAdditionalUserInfo,
-): AdditionalUserInfo {
+) : AdditionalUserInfo {
     actual override val providerId: String?
         get() = js.providerId
     actual override val username: String?
@@ -165,7 +164,7 @@ internal actual class AdditionalUserInfoImpl(
 
 public val AuthTokenResult.js: IdTokenResult get() = js
 
-internal actual class AuthTokenResultImpl(internal val js: IdTokenResult): AuthTokenResult {
+internal actual class AuthTokenResultImpl(internal val js: IdTokenResult) : AuthTokenResult {
 //    actual val authTimestamp: Long
 //        get() = js.authTime
     actual override val claims: Map<String, Any>
