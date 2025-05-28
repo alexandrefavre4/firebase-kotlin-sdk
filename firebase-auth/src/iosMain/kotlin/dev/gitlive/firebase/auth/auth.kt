@@ -23,72 +23,68 @@ import platform.Foundation.NSURL
 public val FirebaseAuth.ios: FIRAuth get() = FIRAuth.auth()
 
 public actual val Firebase.auth: FirebaseAuth
-    get() = FirebaseAuth(FIRAuth.auth())
+    get() = FirebaseAuthImpl(FIRAuth.auth())
 
-public actual fun Firebase.auth(app: FirebaseApp): FirebaseAuth = FirebaseAuth(
+public actual fun Firebase.auth(app: FirebaseApp): FirebaseAuth = FirebaseAuthImpl(
     FIRAuth.authWithApp(app.ios as objcnames.classes.FIRApp),
 )
 
-public actual class FirebaseAuth internal constructor(internal val ios: FIRAuth) {
+internal actual class FirebaseAuthImpl internal constructor(internal val ios: FIRAuth) : FirebaseAuth {
 
-    public actual val currentUser: FirebaseUser?
-        get() = ios.currentUser()?.let { FirebaseUser(it) }
+    actual override val currentUser: FirebaseUser?
+        get() = ios.currentUser()?.let { FirebaseUserImpl(it) }
 
-    public actual val authStateChanged: Flow<FirebaseUser?> get() = callbackFlow {
-        val handle = ios.addAuthStateDidChangeListener { _, user -> trySend(user?.let { FirebaseUser(it) }) }
+    actual override val authStateChanged: Flow<FirebaseUser?> get() = callbackFlow {
+        val handle = ios.addAuthStateDidChangeListener { _, user -> trySend(user?.let { FirebaseUserImpl(it) }) }
         awaitClose { ios.removeAuthStateDidChangeListener(handle) }
     }
 
-    public actual val idTokenChanged: Flow<FirebaseUser?> get() = callbackFlow {
-        val handle = ios.addIDTokenDidChangeListener { _, user -> trySend(user?.let { FirebaseUser(it) }) }
+    actual override val idTokenChanged: Flow<FirebaseUser?> get() = callbackFlow {
+        val handle = ios.addIDTokenDidChangeListener { _, user -> trySend(user?.let { FirebaseUserImpl(it) }) }
         awaitClose { ios.removeIDTokenDidChangeListener(handle) }
     }
 
-    public actual var languageCode: String
+    actual override var languageCode: String
         get() = ios.languageCode() ?: ""
         set(value) {
             ios.setLanguageCode(value)
         }
 
-    public actual suspend fun applyActionCode(code: String): Unit = ios.await { applyActionCode(code, it) }
-    public actual suspend fun confirmPasswordReset(code: String, newPassword: String): Unit = ios.await { confirmPasswordResetWithCode(code, newPassword, it) }
+    actual override suspend fun applyActionCode(code: String): Unit = ios.await { applyActionCode(code, it) }
+    actual override suspend fun confirmPasswordReset(code: String, newPassword: String): Unit = ios.await { confirmPasswordResetWithCode(code, newPassword, it) }
 
-    public actual suspend fun createUserWithEmailAndPassword(email: String, password: String): AuthResult =
-        AuthResult(ios.awaitResult { createUserWithEmail(email = email, password = password, completion = it) })
+    actual override suspend fun createUserWithEmailAndPassword(email: String, password: String): AuthResult =
+        AuthResultImpl(ios.awaitResult { createUserWithEmail(email = email, password = password, completion = it) })
 
-    @Suppress("UNCHECKED_CAST")
-    public actual suspend fun fetchSignInMethodsForEmail(email: String): List<String> =
-        ios.awaitResult<FIRAuth, List<*>?> { fetchSignInMethodsForEmail(email, it) }.orEmpty() as List<String>
-
-    public actual suspend fun sendPasswordResetEmail(email: String, actionCodeSettings: ActionCodeSettings?) {
+    actual override suspend fun sendPasswordResetEmail(email: String, actionCodeSettings: ActionCodeSettings?) {
         ios.await { actionCodeSettings?.let { actionSettings -> sendPasswordResetWithEmail(email, actionSettings.toIos(), it) } ?: sendPasswordResetWithEmail(email = email, completion = it) }
     }
 
-    public actual suspend fun sendSignInLinkToEmail(email: String, actionCodeSettings: ActionCodeSettings): Unit = ios.await { sendSignInLinkToEmail(email, actionCodeSettings.toIos(), it) }
+    actual override suspend fun sendSignInLinkToEmail(email: String, actionCodeSettings: ActionCodeSettings): Unit = ios.await { sendSignInLinkToEmail(email, actionCodeSettings.toIos(), it) }
 
-    public actual fun isSignInWithEmailLink(link: String): Boolean = ios.isSignInWithEmailLink(link)
+    actual override fun isSignInWithEmailLink(link: String): Boolean = ios.isSignInWithEmailLink(link)
 
-    public actual suspend fun signInWithEmailAndPassword(email: String, password: String): AuthResult =
-        AuthResult(ios.awaitResult { signInWithEmail(email = email, password = password, completion = it) })
+    actual override suspend fun signInWithEmailAndPassword(email: String, password: String): AuthResult =
+        AuthResultImpl(ios.awaitResult { signInWithEmail(email = email, password = password, completion = it) })
 
-    public actual suspend fun signInWithCustomToken(token: String): AuthResult =
-        AuthResult(ios.awaitResult { signInWithCustomToken(token, it) })
+    actual override suspend fun signInWithCustomToken(token: String): AuthResult =
+        AuthResultImpl(ios.awaitResult { signInWithCustomToken(token, it) })
 
-    public actual suspend fun signInAnonymously(): AuthResult =
-        AuthResult(ios.awaitResult { signInAnonymouslyWithCompletion(it) })
+    actual override suspend fun signInAnonymously(): AuthResult =
+        AuthResultImpl(ios.awaitResult { signInAnonymouslyWithCompletion(it) })
 
-    public actual suspend fun signInWithCredential(authCredential: AuthCredential): AuthResult =
-        AuthResult(ios.awaitResult { signInWithCredential(authCredential.ios, it) })
+    actual override suspend fun signInWithCredential(authCredential: AuthCredential): AuthResult =
+        AuthResultImpl(ios.awaitResult { signInWithCredential(authCredential.ios, it) })
 
-    public actual suspend fun signInWithEmailLink(email: String, link: String): AuthResult =
-        AuthResult(ios.awaitResult { signInWithEmail(email = email, link = link, completion = it) })
+    actual override suspend fun signInWithEmailLink(email: String, link: String): AuthResult =
+        AuthResultImpl(ios.awaitResult { signInWithEmail(email = email, link = link, completion = it) })
 
-    public actual suspend fun signOut(): Unit = ios.throwError { signOut(it) }
+    actual override suspend fun signOut(): Unit = ios.throwError { signOut(it) }
 
-    public actual suspend fun updateCurrentUser(user: FirebaseUser): Unit = ios.await { updateCurrentUser(user.ios, it) }
-    public actual suspend fun verifyPasswordResetCode(code: String): String = ios.awaitResult { verifyPasswordResetCode(code, it) }
+    actual override suspend fun updateCurrentUser(user: FirebaseUser): Unit = ios.await { updateCurrentUser(user.ios, it) }
+    actual override suspend fun verifyPasswordResetCode(code: String): String = ios.awaitResult { verifyPasswordResetCode(code, it) }
 
-    public actual suspend fun <T : ActionCodeResult> checkActionCode(code: String): T {
+    actual override suspend fun <T : ActionCodeResult> checkActionCode(code: String): T {
         val result: FIRActionCodeInfo = ios.awaitResult { checkActionCode(code, it) }
         @Suppress("UNCHECKED_CAST")
         return when (result.operation()) {
@@ -103,30 +99,30 @@ public actual class FirebaseAuth internal constructor(internal val ios: FIRAuth)
         } as T
     }
 
-    public actual fun useEmulator(host: String, port: Int): Unit = ios.useEmulatorWithHost(host, port.toLong())
+    actual override fun useEmulator(host: String, port: Int): Unit = ios.useEmulatorWithHost(host, port.toLong())
 }
 
 public val AuthResult.ios: FIRAuthDataResult get() = ios
 
-public actual class AuthResult(internal val ios: FIRAuthDataResult) {
-    public actual val user: FirebaseUser?
-        get() = FirebaseUser(ios.user())
-    public actual val credential: AuthCredential?
+internal actual class AuthResultImpl(internal val ios: FIRAuthDataResult): AuthResult {
+    actual override val user: FirebaseUser?
+        get() = FirebaseUserImpl(ios.user())
+    actual override val credential: AuthCredential?
         get() = ios.credential()?.let { AuthCredential(it) }
-    public actual val additionalUserInfo: AdditionalUserInfo?
-        get() = ios.additionalUserInfo()?.let { AdditionalUserInfo(it) }
+    actual override val additionalUserInfo: AdditionalUserInfo?
+        get() = ios.additionalUserInfo()?.let { AdditionalUserInfoImpl(it) }
 }
 
 public val AdditionalUserInfo.ios: FIRAdditionalUserInfo get() = ios
 
-public actual class AdditionalUserInfo(
+internal actual class AdditionalUserInfoImpl(
     internal val ios: FIRAdditionalUserInfo,
-) {
-    public actual val providerId: String?
+): AdditionalUserInfo {
+    actual override val providerId: String?
         get() = ios.providerID()
-    public actual val username: String?
+    actual override val username: String?
         get() = ios.username()
-    public actual val profile: Map<String, Any?>?
+    actual override val profile: Map<String, Any?>?
         get() = ios.profile()
             ?.mapNotNull { (key, value) ->
                 if (key is NSString && value != null) {
@@ -136,24 +132,24 @@ public actual class AdditionalUserInfo(
                 }
             }
             ?.toMap()
-    public actual val isNewUser: Boolean
+    actual override val isNewUser: Boolean
         get() = ios.newUser()
 }
 
 public val AuthTokenResult.ios: FIRAuthTokenResult get() = ios
-public actual class AuthTokenResult(internal val ios: FIRAuthTokenResult) {
+internal actual class AuthTokenResultImpl(internal val ios: FIRAuthTokenResult): AuthTokenResult{
 //    actual val authTimestamp: Long
 //        get() = ios.authDate
-    public actual val claims: Map<String, Any>
+    actual override val claims: Map<String, Any>
         get() = ios.claims().map { it.key.toString() to it.value as Any }.toMap()
 
 //    actual val expirationTimestamp: Long
 //        get() = ios.expirationDate
 //    actual val issuedAtTimestamp: Long
 //        get() = ios.issuedAtDate
-    public actual val signInProvider: String?
+    actual override val signInProvider: String?
         get() = ios.signInProvider()
-    public actual val token: String?
+    actual override val token: String?
         get() = ios.token()
 }
 

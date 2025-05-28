@@ -50,9 +50,9 @@ public actual class MultiFactorSession(internal val js: JsMultiFactorSession)
 public val MultiFactorResolver.js get() = js
 
 public actual class MultiFactorResolver(internal val js: JsMultiFactorResolver) {
-    public actual val auth: FirebaseAuth = rethrow { FirebaseAuth(js.auth) }
+    public actual val auth: FirebaseAuth = rethrow { FirebaseAuthImpl(js.auth) }
     public actual val hints: List<MultiFactorInfo> = rethrow { js.hints.map { MultiFactorInfo(it) } }
     public actual val session: MultiFactorSession = rethrow { MultiFactorSession(js.session) }
 
-    public actual suspend fun resolveSignIn(assertion: MultiFactorAssertion): AuthResult = rethrow { AuthResult(js.resolveSignIn(assertion.js).await()) }
+    public actual suspend fun resolveSignIn(assertion: MultiFactorAssertion): AuthResult = rethrow { AuthResultImpl(js.resolveSignIn(assertion.js).await()) }
 }

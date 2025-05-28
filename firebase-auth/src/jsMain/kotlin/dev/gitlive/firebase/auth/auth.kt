@@ -39,78 +39,76 @@ import dev.gitlive.firebase.auth.externals.AuthResult as JsAuthResult
 import dev.gitlive.firebase.auth.externals.AdditionalUserInfo as JsAdditionalUserInfo
 
 public actual val Firebase.auth: FirebaseAuth
-    get() = rethrow { FirebaseAuth(getAuth()) }
+    get() = rethrow { FirebaseAuthImpl(getAuth()) }
 
 public actual fun Firebase.auth(app: FirebaseApp): FirebaseAuth =
-    rethrow { FirebaseAuth(getAuth(app.js)) }
+    rethrow { FirebaseAuthImpl(getAuth(app.js)) }
 
 public val FirebaseAuth.js: Auth get() = js
 
-public actual class FirebaseAuth internal constructor(internal val js: Auth) {
+internal actual class FirebaseAuthImpl internal constructor(internal val js: Auth): FirebaseAuth {
 
-    public actual val currentUser: FirebaseUser?
-        get() = rethrow { js.currentUser?.let { FirebaseUser(it) } }
+    actual override val currentUser: FirebaseUser?
+        get() = rethrow { js.currentUser?.let { FirebaseUserImpl(it) } }
 
-    public actual val authStateChanged: Flow<FirebaseUser?> get() = callbackFlow {
+    actual override val authStateChanged: Flow<FirebaseUser?> get() = callbackFlow {
         val unsubscribe = js.onAuthStateChanged {
-            trySend(it?.let { FirebaseUser(it) })
+            trySend(it?.let { FirebaseUserImpl(it) })
         }
         awaitClose { unsubscribe() }
     }
 
-    public actual val idTokenChanged: Flow<FirebaseUser?> get() = callbackFlow {
+    actual override val idTokenChanged: Flow<FirebaseUser?> get() = callbackFlow {
         val unsubscribe = js.onIdTokenChanged {
-            trySend(it?.let { FirebaseUser(it) })
+            trySend(it?.let { FirebaseUserImpl(it) })
         }
         awaitClose { unsubscribe() }
     }
 
-    public actual var languageCode: String
+    actual override var languageCode: String
         get() = js.languageCode ?: ""
         set(value) {
             js.languageCode = value
         }
 
-    public actual suspend fun applyActionCode(code: String): Unit = rethrow { applyActionCode(js, code).await() }
-    public actual suspend fun confirmPasswordReset(code: String, newPassword: String): Unit = rethrow { confirmPasswordReset(js, code, newPassword).await() }
+    actual override suspend fun applyActionCode(code: String): Unit = rethrow { applyActionCode(js, code).await() }
+    actual override suspend fun confirmPasswordReset(code: String, newPassword: String): Unit = rethrow { confirmPasswordReset(js, code, newPassword).await() }
 
-    public actual suspend fun createUserWithEmailAndPassword(email: String, password: String): AuthResult =
-        rethrow { AuthResult(createUserWithEmailAndPassword(js, email, password).await()) }
+    actual override suspend fun createUserWithEmailAndPassword(email: String, password: String): AuthResult =
+        rethrow { AuthResultImpl(createUserWithEmailAndPassword(js, email, password).await()) }
 
-    public actual suspend fun fetchSignInMethodsForEmail(email: String): List<String> = rethrow { fetchSignInMethodsForEmail(js, email).await().asList() }
-
-    public actual suspend fun sendPasswordResetEmail(email: String, actionCodeSettings: ActionCodeSettings?): Unit =
+    actual override suspend fun sendPasswordResetEmail(email: String, actionCodeSettings: ActionCodeSettings?): Unit =
         rethrow { sendPasswordResetEmail(js, email, actionCodeSettings?.toJson()).await() }
 
-    public actual suspend fun sendSignInLinkToEmail(email: String, actionCodeSettings: ActionCodeSettings): Unit =
+    actual override suspend fun sendSignInLinkToEmail(email: String, actionCodeSettings: ActionCodeSettings): Unit =
         rethrow { sendSignInLinkToEmail(js, email, actionCodeSettings.toJson()).await() }
 
-    public actual fun isSignInWithEmailLink(link: String): Boolean = rethrow { isSignInWithEmailLink(js, link) }
+    actual override fun isSignInWithEmailLink(link: String): Boolean = rethrow { isSignInWithEmailLink(js, link) }
 
-    public actual suspend fun signInWithEmailAndPassword(email: String, password: String): AuthResult =
-        rethrow { AuthResult(signInWithEmailAndPassword(js, email, password).await()) }
+    actual override suspend fun signInWithEmailAndPassword(email: String, password: String): AuthResult =
+        rethrow { AuthResultImpl(signInWithEmailAndPassword(js, email, password).await()) }
 
-    public actual suspend fun signInWithCustomToken(token: String): AuthResult =
-        rethrow { AuthResult(signInWithCustomToken(js, token).await()) }
+    actual override suspend fun signInWithCustomToken(token: String): AuthResult =
+        rethrow { AuthResultImpl(signInWithCustomToken(js, token).await()) }
 
-    public actual suspend fun signInAnonymously(): AuthResult =
-        rethrow { AuthResult(signInAnonymously(js).await()) }
+    actual override suspend fun signInAnonymously(): AuthResult =
+        rethrow { AuthResultImpl(signInAnonymously(js).await()) }
 
-    public actual suspend fun signInWithCredential(authCredential: AuthCredential): AuthResult =
-        rethrow { AuthResult(signInWithCredential(js, authCredential.js).await()) }
+    actual override suspend fun signInWithCredential(authCredential: AuthCredential): AuthResult =
+        rethrow { AuthResultImpl(signInWithCredential(js, authCredential.js).await()) }
 
-    public actual suspend fun signInWithEmailLink(email: String, link: String): AuthResult =
-        rethrow { AuthResult(signInWithEmailLink(js, email, link).await()) }
+    actual override suspend fun signInWithEmailLink(email: String, link: String): AuthResult =
+        rethrow { AuthResultImpl(signInWithEmailLink(js, email, link).await()) }
 
-    public actual suspend fun signOut(): Unit = rethrow { signOut(js).await() }
+    actual override suspend fun signOut(): Unit = rethrow { signOut(js).await() }
 
-    public actual suspend fun updateCurrentUser(user: FirebaseUser): Unit =
+    actual override suspend fun updateCurrentUser(user: FirebaseUser): Unit =
         rethrow { updateCurrentUser(js, user.js).await() }
 
-    public actual suspend fun verifyPasswordResetCode(code: String): String =
+    actual override suspend fun verifyPasswordResetCode(code: String): String =
         rethrow { verifyPasswordResetCode(js, code).await() }
 
-    public actual suspend fun <T : ActionCodeResult> checkActionCode(code: String): T = rethrow {
+    actual override suspend fun <T : ActionCodeResult> checkActionCode(code: String): T = rethrow {
         val result = checkActionCode(js, code).await()
         @Suppress("UNCHECKED_CAST")
         return when (result.operation) {
@@ -130,30 +128,30 @@ public actual class FirebaseAuth internal constructor(internal val js: Auth) {
         } as T
     }
 
-    public actual fun useEmulator(host: String, port: Int): Unit = rethrow { connectAuthEmulator(js, "http://$host:$port") }
+    actual override fun useEmulator(host: String, port: Int): Unit = rethrow { connectAuthEmulator(js, "http://$host:$port") }
 }
 
 public val AuthResult.js: JsAuthResult get() = js
 
-public actual class AuthResult(internal val js: JsAuthResult) {
-    public actual val user: FirebaseUser?
-        get() = rethrow { js.user?.let { FirebaseUser(it) } }
-    public actual val credential: AuthCredential?
+internal actual class AuthResultImpl(internal val js: JsAuthResult): AuthResult{
+    actual override val user: FirebaseUser?
+        get() = rethrow { js.user?.let { FirebaseUserImpl(it) } }
+    actual override val credential: AuthCredential?
         get() = rethrow { js.credential?.let { AuthCredential(it) } }
-    public actual val additionalUserInfo: AdditionalUserInfo?
-        get() = rethrow { js.additionalUserInfo?.let { AdditionalUserInfo(it) } }
+    actual override val additionalUserInfo: AdditionalUserInfo?
+        get() = rethrow { js.additionalUserInfo?.let { AdditionalUserInfoImpl(it) } }
 }
 
 public val AdditionalUserInfo.js: JsAdditionalUserInfo get() = js
 
-public actual class AdditionalUserInfo(
+internal actual class AdditionalUserInfoImpl(
     internal val js: JsAdditionalUserInfo,
-) {
-    public actual val providerId: String?
+): AdditionalUserInfo {
+    actual override val providerId: String?
         get() = js.providerId
-    public actual val username: String?
+    actual override val username: String?
         get() = js.username
-    public actual val profile: Map<String, Any?>?
+    actual override val profile: Map<String, Any?>?
         get() = rethrow {
             val profile = js.profile ?: return@rethrow null
             val entries = js("Object.entries") as (Json) -> Array<Array<Any?>>
@@ -161,16 +159,16 @@ public actual class AdditionalUserInfo(
                 .invoke(profile)
                 .associate { entry -> entry[0] as String to entry[1] }
         }
-    public actual val isNewUser: Boolean
+    actual override val isNewUser: Boolean
         get() = js.newUser
 }
 
 public val AuthTokenResult.js: IdTokenResult get() = js
 
-public actual class AuthTokenResult(internal val js: IdTokenResult) {
+internal actual class AuthTokenResultImpl(internal val js: IdTokenResult): AuthTokenResult {
 //    actual val authTimestamp: Long
 //        get() = js.authTime
-    public actual val claims: Map<String, Any>
+    actual override val claims: Map<String, Any>
         get() = (js("Object").keys(js.claims) as Array<String>).mapNotNull { key ->
             js.claims[key]?.let { key to it }
         }.toMap()
@@ -179,9 +177,9 @@ public actual class AuthTokenResult(internal val js: IdTokenResult) {
 //        get() = android.expirationTime
 //    actual val issuedAtTimestamp: Long
 //        get() = js.issuedAtTime
-    public actual val signInProvider: String?
+    actual override val signInProvider: String?
         get() = js.signInProvider
-    public actual val token: String?
+    actual override val token: String?
         get() = js.token
 }
 

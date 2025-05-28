@@ -12,97 +12,96 @@ import platform.Foundation.NSURL
 
 public val FirebaseUser.ios: FIRUser get() = ios
 
-public actual class FirebaseUser internal constructor(internal val ios: FIRUser) {
-    public actual val uid: String
+internal actual class FirebaseUserImpl internal constructor(internal val ios: FIRUser): FirebaseUser {
+    actual override val uid: String
         get() = ios.uid()
-    public actual val displayName: String?
+    actual override val displayName: String?
         get() = ios.displayName()
-    public actual val email: String?
+    actual override val email: String?
         get() = ios.email()
-    public actual val phoneNumber: String?
+    actual override val phoneNumber: String?
         get() = ios.phoneNumber()
-    public actual val photoURL: String?
+    actual override val photoURL: String?
         get() = ios.photoURL()?.absoluteString
-    public actual val isAnonymous: Boolean
+    actual override val isAnonymous: Boolean
         get() = ios.anonymous()
-    public actual val isEmailVerified: Boolean
+    actual override val isEmailVerified: Boolean
         get() = ios.emailVerified()
-    public actual val metaData: UserMetaData?
-        get() = UserMetaData(ios.metadata())
-    public actual val multiFactor: MultiFactor
+    actual override val metaData: UserMetaData?
+        get() = UserMetaDataImpl(ios.metadata())
+    actual override val multiFactor: MultiFactor
         get() = MultiFactor(ios.multiFactor())
-    public actual val providerData: List<UserInfo>
-        get() = ios.providerData().mapNotNull { provider -> (provider as? FIRUserInfoProtocol)?.let { UserInfo(it) } }
-    public actual val providerId: String
+    actual override val providerData: List<UserInfo>
+        get() = ios.providerData().mapNotNull { provider -> (provider as? FIRUserInfoProtocol)?.let { UserInfoImpl(it) } }
+    actual override val providerId: String
         get() = ios.providerID()
 
-    public actual suspend fun delete(): Unit = ios.await { deleteWithCompletion(it) }
+    actual override suspend fun delete(): Unit = ios.await { deleteWithCompletion(it) }
 
-    public actual suspend fun reload(): Unit = ios.await { reloadWithCompletion(it) }
+    actual override suspend fun reload(): Unit = ios.await { reloadWithCompletion(it) }
 
-    public actual suspend fun getIdToken(forceRefresh: Boolean): String? =
+    actual override suspend fun getIdToken(forceRefresh: Boolean): String? =
         ios.awaitResult { getIDTokenForcingRefresh(forceRefresh, it) }
 
-    public actual suspend fun getIdTokenResult(forceRefresh: Boolean): AuthTokenResult =
-        AuthTokenResult(ios.awaitResult { getIDTokenResultForcingRefresh(forceRefresh, it) })
+    actual override suspend fun getIdTokenResult(forceRefresh: Boolean): AuthTokenResult =
+        AuthTokenResultImpl(ios.awaitResult { getIDTokenResultForcingRefresh(forceRefresh, it) })
 
-    public actual suspend fun linkWithCredential(credential: AuthCredential): AuthResult =
-        AuthResult(ios.awaitResult { linkWithCredential(credential.ios, it) })
+    actual override suspend fun linkWithCredential(credential: AuthCredential): AuthResult =
+        AuthResultImpl(ios.awaitResult { linkWithCredential(credential.ios, it) })
 
-    public actual suspend fun reauthenticate(credential: AuthCredential) {
+    actual override suspend fun reauthenticate(credential: AuthCredential) {
         ios.awaitResult<FIRUser, FIRAuthDataResult?> { reauthenticateWithCredential(credential.ios, it) }
     }
 
-    public actual suspend fun reauthenticateAndRetrieveData(credential: AuthCredential): AuthResult =
-        AuthResult(ios.awaitResult { reauthenticateWithCredential(credential.ios, it) })
+    actual override suspend fun reauthenticateAndRetrieveData(credential: AuthCredential): AuthResult =
+        AuthResultImpl(ios.awaitResult { reauthenticateWithCredential(credential.ios, it) })
 
-    public actual suspend fun sendEmailVerification(actionCodeSettings: ActionCodeSettings?): Unit = ios.await {
+    actual override suspend fun sendEmailVerification(actionCodeSettings: ActionCodeSettings?): Unit = ios.await {
         actionCodeSettings?.let { settings -> sendEmailVerificationWithActionCodeSettings(settings.toIos(), it) }
             ?: sendEmailVerificationWithCompletion(it)
     }
 
-    public actual suspend fun unlink(provider: String): FirebaseUser? {
+    actual override suspend fun unlink(provider: String): FirebaseUser? {
         val user: FIRUser? = ios.awaitResult { unlinkFromProvider(provider, it) }
         return user?.let {
-            FirebaseUser(it)
+            FirebaseUserImpl(it)
         }
     }
-    public actual suspend fun updateEmail(email: String): Unit = ios.await { updateEmail(email, it) }
-    public actual suspend fun updatePassword(password: String): Unit = ios.await { updatePassword(password, it) }
-    public actual suspend fun updatePhoneNumber(credential: PhoneAuthCredential): Unit = ios.await { updatePhoneNumberCredential(credential.ios, it) }
-    public actual suspend fun updateProfile(displayName: String?, photoUrl: String?) {
+    actual override suspend fun updatePassword(password: String): Unit = ios.await { updatePassword(password, it) }
+    actual override suspend fun updatePhoneNumber(credential: PhoneAuthCredential): Unit = ios.await { updatePhoneNumberCredential(credential.ios, it) }
+    actual override suspend fun updateProfile(displayName: String?, photoUrl: String?) {
         val request = ios.profileChangeRequest()
             .apply { setDisplayName(displayName) }
             .apply { setPhotoURL(photoUrl?.let { NSURL.URLWithString(it) }) }
         ios.await { request.commitChangesWithCompletion(it) }
     }
-    public actual suspend fun verifyBeforeUpdateEmail(newEmail: String, actionCodeSettings: ActionCodeSettings?): Unit = ios.await {
+    actual override suspend fun verifyBeforeUpdateEmail(newEmail: String, actionCodeSettings: ActionCodeSettings?): Unit = ios.await {
         actionCodeSettings?.let { actionSettings -> sendEmailVerificationBeforeUpdatingEmail(newEmail, actionSettings.toIos(), it) } ?: sendEmailVerificationBeforeUpdatingEmail(newEmail, it)
     }
 }
 
 public val UserInfo.ios: FIRUserInfoProtocol get() = ios
 
-public actual class UserInfo(internal val ios: FIRUserInfoProtocol) {
-    public actual val displayName: String?
+internal actual class UserInfoImpl(internal val ios: FIRUserInfoProtocol): UserInfo {
+    actual override val displayName: String?
         get() = ios.displayName()
-    public actual val email: String?
+    actual override val email: String?
         get() = ios.email()
-    public actual val phoneNumber: String?
+    actual override val phoneNumber: String?
         get() = ios.phoneNumber()
-    public actual val photoURL: String?
+    actual override val photoURL: String?
         get() = ios.photoURL()?.absoluteString
-    public actual val providerId: String
+    actual override val providerId: String
         get() = ios.providerID()
-    public actual val uid: String
+    actual override val uid: String
         get() = ios.uid()
 }
 
 public val UserMetaData.ios: FIRUserMetadata get() = ios
 
-public actual class UserMetaData(internal val ios: FIRUserMetadata) {
-    public actual val creationTime: Double?
+internal actual class UserMetaDataImpl(internal val ios: FIRUserMetadata): UserMetaData {
+    actual override val creationTime: Double?
         get() = ios.creationDate()?.timeIntervalSinceReferenceDate
-    public actual val lastSignInTime: Double?
+    actual override val lastSignInTime: Double?
         get() = ios.lastSignInDate()?.timeIntervalSinceReferenceDate
 }

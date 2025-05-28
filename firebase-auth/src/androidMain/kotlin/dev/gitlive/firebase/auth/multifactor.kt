@@ -50,9 +50,9 @@ public actual class MultiFactorSession(internal val android: com.google.firebase
 public val MultiFactorResolver.android: com.google.firebase.auth.MultiFactorResolver get() = android
 
 public actual class MultiFactorResolver(internal val android: com.google.firebase.auth.MultiFactorResolver) {
-    public actual val auth: FirebaseAuth = FirebaseAuth(android.firebaseAuth)
+    public actual val auth: FirebaseAuth = FirebaseAuthImpl(android.firebaseAuth)
     public actual val hints: List<MultiFactorInfo> = android.hints.map { MultiFactorInfo(it) }
     public actual val session: MultiFactorSession = MultiFactorSession(android.session)
 
-    public actual suspend fun resolveSignIn(assertion: MultiFactorAssertion): AuthResult = AuthResult(android.resolveSignIn(assertion.android).await())
+    public actual suspend fun resolveSignIn(assertion: MultiFactorAssertion): AuthResult = AuthResultImpl(android.resolveSignIn(assertion.android).await())
 }

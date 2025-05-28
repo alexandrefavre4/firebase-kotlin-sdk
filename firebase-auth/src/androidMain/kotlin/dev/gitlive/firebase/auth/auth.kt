@@ -21,78 +21,75 @@ import kotlinx.coroutines.tasks.await
 public val FirebaseAuth.android: com.google.firebase.auth.FirebaseAuth get() = com.google.firebase.auth.FirebaseAuth.getInstance()
 
 public actual val Firebase.auth: FirebaseAuth
-    get() = FirebaseAuth(com.google.firebase.auth.FirebaseAuth.getInstance())
+    get() = FirebaseAuthImpl(com.google.firebase.auth.FirebaseAuth.getInstance())
 
 public actual fun Firebase.auth(app: FirebaseApp): FirebaseAuth =
-    FirebaseAuth(com.google.firebase.auth.FirebaseAuth.getInstance(app.publicAndroid))
+    FirebaseAuthImpl(com.google.firebase.auth.FirebaseAuth.getInstance(app.publicAndroid))
 
-public actual class FirebaseAuth internal constructor(internal val android: com.google.firebase.auth.FirebaseAuth) {
-    public actual val currentUser: FirebaseUser?
-        get() = android.currentUser?.let { FirebaseUser(it) }
+internal actual class FirebaseAuthImpl internal constructor(internal val android: com.google.firebase.auth.FirebaseAuth) : FirebaseAuth {
+    actual override val currentUser: FirebaseUser?
+        get() = android.currentUser?.let { FirebaseUserImpl(it) }
 
-    public actual val authStateChanged: Flow<FirebaseUser?> get() = callbackFlow {
-        val listener = AuthStateListener { auth -> trySend(auth.currentUser?.let { FirebaseUser(it) }) }
+    actual override val authStateChanged: Flow<FirebaseUser?> get() = callbackFlow {
+        val listener = AuthStateListener { auth -> trySend(auth.currentUser?.let { FirebaseUserImpl(it) }) }
         android.addAuthStateListener(listener)
         awaitClose { android.removeAuthStateListener(listener) }
     }
 
-    public actual val idTokenChanged: Flow<FirebaseUser?> get() = callbackFlow {
-        val listener = com.google.firebase.auth.FirebaseAuth.IdTokenListener { auth -> trySend(auth.currentUser?.let { FirebaseUser(it) }) }
+    actual override val idTokenChanged: Flow<FirebaseUser?> get() = callbackFlow {
+        val listener = com.google.firebase.auth.FirebaseAuth.IdTokenListener { auth -> trySend(auth.currentUser?.let { FirebaseUserImpl(it) }) }
         android.addIdTokenListener(listener)
         awaitClose { android.removeIdTokenListener(listener) }
     }
 
-    public actual var languageCode: String
+    actual override var languageCode: String
         get() = android.languageCode ?: ""
         set(value) {
             android.setLanguageCode(value)
         }
 
-    public actual suspend fun applyActionCode(code: String) {
+    actual override suspend fun applyActionCode(code: String) {
         android.applyActionCode(code).await()
     }
-    public actual suspend fun confirmPasswordReset(code: String, newPassword: String) {
+    actual override suspend fun confirmPasswordReset(code: String, newPassword: String) {
         android.confirmPasswordReset(code, newPassword).await()
     }
 
-    public actual suspend fun createUserWithEmailAndPassword(email: String, password: String): AuthResult =
-        AuthResult(android.createUserWithEmailAndPassword(email, password).await())
+    actual override suspend fun createUserWithEmailAndPassword(email: String, password: String): AuthResult =
+        AuthResultImpl(android.createUserWithEmailAndPassword(email, password).await())
 
-    @Suppress("DEPRECATION")
-    public actual suspend fun fetchSignInMethodsForEmail(email: String): List<String> = android.fetchSignInMethodsForEmail(email).await().signInMethods.orEmpty()
-
-    public actual suspend fun sendPasswordResetEmail(email: String, actionCodeSettings: ActionCodeSettings?) {
+    actual override suspend fun sendPasswordResetEmail(email: String, actionCodeSettings: ActionCodeSettings?) {
         android.sendPasswordResetEmail(email, actionCodeSettings?.toAndroid()).await()
     }
 
-    public actual suspend fun sendSignInLinkToEmail(email: String, actionCodeSettings: ActionCodeSettings) {
+    actual override suspend fun sendSignInLinkToEmail(email: String, actionCodeSettings: ActionCodeSettings) {
         android.sendSignInLinkToEmail(email, actionCodeSettings.toAndroid()).await()
     }
 
-    public actual fun isSignInWithEmailLink(link: String): Boolean = android.isSignInWithEmailLink(link)
+    actual override fun isSignInWithEmailLink(link: String): Boolean = android.isSignInWithEmailLink(link)
 
-    public actual suspend fun signInWithEmailAndPassword(email: String, password: String): AuthResult =
-        AuthResult(android.signInWithEmailAndPassword(email, password).await())
+    actual override suspend fun signInWithEmailAndPassword(email: String, password: String): AuthResult =
+        AuthResultImpl(android.signInWithEmailAndPassword(email, password).await())
 
-    public actual suspend fun signInWithCustomToken(token: String): AuthResult =
-        AuthResult(android.signInWithCustomToken(token).await())
+    actual override suspend fun signInWithCustomToken(token: String): AuthResult =
+        AuthResultImpl(android.signInWithCustomToken(token).await())
 
-    public actual suspend fun signInAnonymously(): AuthResult = AuthResult(android.signInAnonymously().await())
+    actual override suspend fun signInAnonymously(): AuthResult = AuthResultImpl(android.signInAnonymously().await())
 
-    public actual suspend fun signInWithCredential(authCredential: AuthCredential): AuthResult =
-        AuthResult(android.signInWithCredential(authCredential.android).await())
+    actual override suspend fun signInWithCredential(authCredential: AuthCredential): AuthResult =
+        AuthResultImpl(android.signInWithCredential(authCredential.android).await())
 
-    public actual suspend fun signInWithEmailLink(email: String, link: String): AuthResult =
-        AuthResult(android.signInWithEmailLink(email, link).await())
+    actual override suspend fun signInWithEmailLink(email: String, link: String): AuthResult =
+        AuthResultImpl(android.signInWithEmailLink(email, link).await())
 
-    public actual suspend fun signOut(): Unit = android.signOut()
+    actual override suspend fun signOut(): Unit = android.signOut()
 
-    public actual suspend fun updateCurrentUser(user: FirebaseUser) {
+    actual override suspend fun updateCurrentUser(user: FirebaseUser) {
         android.updateCurrentUser(user.android).await()
     }
-    public actual suspend fun verifyPasswordResetCode(code: String): String = android.verifyPasswordResetCode(code).await()
+    actual override suspend fun verifyPasswordResetCode(code: String): String = android.verifyPasswordResetCode(code).await()
 
-    public actual suspend fun <T : ActionCodeResult> checkActionCode(code: String): T {
+    actual override suspend fun <T : ActionCodeResult> checkActionCode(code: String): T {
         val result = android.checkActionCode(code).await()
         @Suppress("UNCHECKED_CAST")
         return when (result.operation) {
@@ -113,51 +110,51 @@ public actual class FirebaseAuth internal constructor(internal val android: com.
         } as T
     }
 
-    public actual fun useEmulator(host: String, port: Int): Unit = android.useEmulator(host, port)
+    actual override fun useEmulator(host: String, port: Int): Unit = android.useEmulator(host, port)
 }
 
 public val AuthResult.android: com.google.firebase.auth.AuthResult get() = android
 
-public actual class AuthResult(internal val android: com.google.firebase.auth.AuthResult) {
-    public actual val user: FirebaseUser?
-        get() = android.user?.let { FirebaseUser(it) }
-    public actual val credential: AuthCredential?
+internal actual class AuthResultImpl(internal val android: com.google.firebase.auth.AuthResult): AuthResult {
+    actual override val user: FirebaseUser?
+        get() = android.user?.let { FirebaseUserImpl(it) }
+    actual override val credential: AuthCredential?
         get() = android.credential?.let { AuthCredential(it) }
-    public actual val additionalUserInfo: AdditionalUserInfo?
-        get() = android.additionalUserInfo?.let { AdditionalUserInfo(it) }
+    actual override val additionalUserInfo: AdditionalUserInfo?
+        get() = android.additionalUserInfo?.let { AdditionalUserInfoImpl(it) }
 }
 
 public val AdditionalUserInfo.android: com.google.firebase.auth.AdditionalUserInfo
     get() = android
 
-public actual class AdditionalUserInfo(
+internal actual class AdditionalUserInfoImpl(
     internal val android: com.google.firebase.auth.AdditionalUserInfo,
-) {
-    public actual val providerId: String?
+): AdditionalUserInfo {
+    actual override val providerId: String?
         get() = android.providerId
-    public actual val username: String?
+    actual override val username: String?
         get() = android.username
-    public actual val profile: Map<String, Any?>?
+    actual override val profile: Map<String, Any?>?
         get() = android.profile
-    public actual val isNewUser: Boolean
+    actual override val isNewUser: Boolean
         get() = android.isNewUser
 }
 
 public val AuthTokenResult.android: com.google.firebase.auth.GetTokenResult get() = android
 
-public actual class AuthTokenResult(internal val android: com.google.firebase.auth.GetTokenResult) {
+internal actual class AuthTokenResultImpl(internal val android: com.google.firebase.auth.GetTokenResult): AuthTokenResult {
 //    actual val authTimestamp: Long
 //        get() = android.authTimestamp
-    public actual val claims: Map<String, Any>
+    actual override val claims: Map<String, Any>
         get() = android.claims
 
 //    actual val expirationTimestamp: Long
 //        get() = android.expirationTimestamp
 //    actual val issuedAtTimestamp: Long
 //        get() = android.issuedAtTimestamp
-    public actual val signInProvider: String?
+    actual override val signInProvider: String?
         get() = android.signInProvider
-    public actual val token: String?
+    actual override val token: String?
         get() = android.token
 }
 

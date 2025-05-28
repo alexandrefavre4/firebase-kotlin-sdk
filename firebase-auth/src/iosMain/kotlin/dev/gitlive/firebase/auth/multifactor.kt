@@ -44,9 +44,9 @@ public actual class MultiFactorSession(internal val ios: FIRMultiFactorSession)
 public val MultiFactorResolver.ios: FIRMultiFactorResolver get() = ios
 
 public actual class MultiFactorResolver(internal val ios: FIRMultiFactorResolver) {
-    public actual val auth: FirebaseAuth = FirebaseAuth(ios.auth())
+    public actual val auth: FirebaseAuth = FirebaseAuthImpl(ios.auth())
     public actual val hints: List<MultiFactorInfo> = ios.hints().mapNotNull { hint -> (hint as? FIRMultiFactorInfo)?.let { MultiFactorInfo(it) } }
     public actual val session: MultiFactorSession = MultiFactorSession(ios.session())
 
-    public actual suspend fun resolveSignIn(assertion: MultiFactorAssertion): AuthResult = AuthResult(ios.awaitResult { resolveSignInWithAssertion(assertion.ios, it) })
+    public actual suspend fun resolveSignIn(assertion: MultiFactorAssertion): AuthResult = AuthResultImpl(ios.awaitResult { resolveSignInWithAssertion(assertion.ios, it) })
 }

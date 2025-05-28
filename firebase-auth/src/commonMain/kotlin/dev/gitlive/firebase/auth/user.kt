@@ -4,7 +4,7 @@
 
 package dev.gitlive.firebase.auth
 
-public expect class FirebaseUser {
+public interface FirebaseUser {
     public val uid: String
     public val displayName: String?
     public val email: String?
@@ -25,16 +25,40 @@ public expect class FirebaseUser {
     public suspend fun reauthenticateAndRetrieveData(credential: AuthCredential): AuthResult
     public suspend fun sendEmailVerification(actionCodeSettings: ActionCodeSettings? = null)
     public suspend fun unlink(provider: String): FirebaseUser?
-
-    @Deprecated("Use verifyBeforeUpdateEmail instead", replaceWith = ReplaceWith("verifyBeforeUpdateEmail(email)"))
-    public suspend fun updateEmail(email: String)
     public suspend fun updatePassword(password: String)
     public suspend fun updatePhoneNumber(credential: PhoneAuthCredential)
     public suspend fun updateProfile(displayName: String? = this.displayName, photoUrl: String? = this.photoURL)
     public suspend fun verifyBeforeUpdateEmail(newEmail: String, actionCodeSettings: ActionCodeSettings? = null)
 }
 
-public expect class UserInfo {
+internal expect class FirebaseUserImpl : FirebaseUser {
+    override val uid: String
+    override val displayName: String?
+    override val email: String?
+    override val phoneNumber: String?
+    override val photoURL: String?
+    override val isAnonymous: Boolean
+    override val isEmailVerified: Boolean
+    override val metaData: UserMetaData?
+    override val multiFactor: MultiFactor
+    override val providerData: List<UserInfo>
+    override val providerId: String
+    override suspend fun delete()
+    override suspend fun reload()
+    override suspend fun getIdToken(forceRefresh: Boolean): String?
+    override suspend fun getIdTokenResult(forceRefresh: Boolean): AuthTokenResult
+    override suspend fun linkWithCredential(credential: AuthCredential): AuthResult
+    override suspend fun reauthenticate(credential: AuthCredential)
+    override suspend fun reauthenticateAndRetrieveData(credential: AuthCredential): AuthResult
+    override suspend fun sendEmailVerification(actionCodeSettings: ActionCodeSettings?)
+    override suspend fun unlink(provider: String): FirebaseUser?
+    override suspend fun updatePassword(password: String)
+    override suspend fun updatePhoneNumber(credential: PhoneAuthCredential)
+    override suspend fun updateProfile(displayName: String?, photoUrl: String?)
+    override suspend fun verifyBeforeUpdateEmail(newEmail: String, actionCodeSettings: ActionCodeSettings?)
+}
+
+public interface UserInfo {
     public val displayName: String?
     public val email: String?
     public val phoneNumber: String?
@@ -43,7 +67,21 @@ public expect class UserInfo {
     public val uid: String
 }
 
-public expect class UserMetaData {
+internal expect class UserInfoImpl : UserInfo {
+    override val displayName: String?
+    override val email: String?
+    override val phoneNumber: String?
+    override val photoURL: String?
+    override val providerId: String
+    override val uid: String
+}
+
+public interface UserMetaData {
     public val creationTime: Double?
     public val lastSignInTime: Double?
+}
+
+internal expect class UserMetaDataImpl: UserMetaData {
+    override val creationTime: Double?
+    override val lastSignInTime: Double?
 }

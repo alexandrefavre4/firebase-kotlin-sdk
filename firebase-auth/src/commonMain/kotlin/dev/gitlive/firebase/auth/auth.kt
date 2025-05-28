@@ -13,18 +13,17 @@ public expect val Firebase.auth: FirebaseAuth
 
 public expect fun Firebase.auth(app: FirebaseApp): FirebaseAuth
 
-public expect class FirebaseAuth {
+public interface FirebaseAuth {
+
     public val currentUser: FirebaseUser?
     public val authStateChanged: Flow<FirebaseUser?>
     public val idTokenChanged: Flow<FirebaseUser?>
     public var languageCode: String
+
     public suspend fun applyActionCode(code: String)
     public suspend fun <T : ActionCodeResult> checkActionCode(code: String): T
     public suspend fun confirmPasswordReset(code: String, newPassword: String)
     public suspend fun createUserWithEmailAndPassword(email: String, password: String): AuthResult
-
-    @Deprecated("Migrating off of this method is recommended as a security best-practice. Learn more in the Identity Platform documentation for [Email Enumeration Protection](https://cloud.google.com/identity-platform/docs/admin/email-enumeration-protection).")
-    public suspend fun fetchSignInMethodsForEmail(email: String): List<String>
     public suspend fun sendPasswordResetEmail(email: String, actionCodeSettings: ActionCodeSettings? = null)
     public suspend fun sendSignInLinkToEmail(email: String, actionCodeSettings: ActionCodeSettings)
     public fun isSignInWithEmailLink(link: String): Boolean
@@ -39,27 +38,69 @@ public expect class FirebaseAuth {
     public fun useEmulator(host: String, port: Int)
 }
 
-public expect class AuthResult {
+internal expect class FirebaseAuthImpl: FirebaseAuth {
+    override val currentUser: FirebaseUser?
+    override val authStateChanged: Flow<FirebaseUser?>
+    override val idTokenChanged: Flow<FirebaseUser?>
+    override var languageCode: String
+    override suspend fun applyActionCode(code: String)
+    override suspend fun <T : ActionCodeResult> checkActionCode(code: String): T
+    override suspend fun confirmPasswordReset(code: String, newPassword: String)
+    override suspend fun createUserWithEmailAndPassword(email: String, password: String): AuthResult
+    override suspend fun sendPasswordResetEmail(email: String, actionCodeSettings: ActionCodeSettings?)
+    override suspend fun sendSignInLinkToEmail(email: String, actionCodeSettings: ActionCodeSettings)
+    override fun isSignInWithEmailLink(link: String): Boolean
+    override suspend fun signInWithEmailAndPassword(email: String, password: String): AuthResult
+    override suspend fun signInWithCustomToken(token: String): AuthResult
+    override suspend fun signInAnonymously(): AuthResult
+    override suspend fun signInWithCredential(authCredential: AuthCredential): AuthResult
+    override suspend fun signInWithEmailLink(email: String, link: String): AuthResult
+    override suspend fun signOut()
+    override suspend fun updateCurrentUser(user: FirebaseUser)
+    override suspend fun verifyPasswordResetCode(code: String): String
+    override fun useEmulator(host: String, port: Int)
+}
+
+public interface AuthResult {
     public val user: FirebaseUser?
     public val credential: AuthCredential?
     public val additionalUserInfo: AdditionalUserInfo?
 }
 
-public expect class AdditionalUserInfo {
+internal expect class AuthResultImpl: AuthResult {
+    override val user: FirebaseUser?
+    override val credential: AuthCredential?
+    override val additionalUserInfo: AdditionalUserInfo?
+}
+
+public interface AdditionalUserInfo {
     public val providerId: String?
     public val username: String?
     public val profile: Map<String, Any?>?
     public val isNewUser: Boolean
 }
 
-public expect class AuthTokenResult {
-//    val authTimestamp: Long
+internal expect class AdditionalUserInfoImpl: AdditionalUserInfo {
+    override val providerId: String?
+    override val username: String?
+    override val profile: Map<String, Any?>?
+    override val isNewUser: Boolean
+}
+
+public interface AuthTokenResult {
     public val claims: Map<String, Any>
+    public val signInProvider: String?
+    public val token: String?
+}
+
+internal expect class AuthTokenResultImpl: AuthTokenResult {
+//    val authTimestamp: Long
+    override val claims: Map<String, Any>
 
 //    val expirationTimestamp: Long
 //    val issuedAtTimestamp: Long
-    public val signInProvider: String?
-    public val token: String?
+    override val signInProvider: String?
+    override val token: String?
 }
 
 public sealed class ActionCodeResult {

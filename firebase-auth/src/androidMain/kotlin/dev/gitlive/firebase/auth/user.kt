@@ -10,92 +10,88 @@ import kotlinx.coroutines.tasks.await
 
 public val FirebaseUser.android: com.google.firebase.auth.FirebaseUser get() = android
 
-public actual class FirebaseUser internal constructor(internal val android: com.google.firebase.auth.FirebaseUser) {
-    public actual val uid: String
+internal actual class FirebaseUserImpl internal constructor(internal val android: com.google.firebase.auth.FirebaseUser): FirebaseUser {
+    actual override val uid: String
         get() = android.uid
-    public actual val displayName: String?
+    actual override val displayName: String?
         get() = android.displayName
-    public actual val email: String?
+    actual override val email: String?
         get() = android.email
-    public actual val phoneNumber: String?
+    actual override val phoneNumber: String?
         get() = android.phoneNumber
-    public actual val photoURL: String?
+    actual override val photoURL: String?
         get() = android.photoUrl?.toString()
-    public actual val isAnonymous: Boolean
+    actual override val isAnonymous: Boolean
         get() = android.isAnonymous
-    public actual val isEmailVerified: Boolean
+    actual override val isEmailVerified: Boolean
         get() = android.isEmailVerified
-    public actual val metaData: UserMetaData?
-        get() = android.metadata?.let { UserMetaData(it) }
-    public actual val multiFactor: MultiFactor
+    actual override val metaData: UserMetaData?
+        get() = android.metadata?.let { UserMetaDataImpl(it) }
+    actual override val multiFactor: MultiFactor
         get() = MultiFactor(android.multiFactor)
-    public actual val providerData: List<UserInfo>
-        get() = android.providerData.map { UserInfo(it) }
-    public actual val providerId: String
+    actual override val providerData: List<UserInfo>
+        get() = android.providerData.map { UserInfoImpl(it) }
+    actual override val providerId: String
         get() = android.providerId
-    public actual suspend fun delete() {
+    actual override suspend fun delete() {
         android.delete().await()
     }
-    public actual suspend fun reload() {
+    actual override suspend fun reload() {
         android.reload().await()
     }
-    public actual suspend fun getIdToken(forceRefresh: Boolean): String? = android.getIdToken(forceRefresh).await().token
-    public actual suspend fun getIdTokenResult(forceRefresh: Boolean): AuthTokenResult = android.getIdToken(forceRefresh).await().run { AuthTokenResult(this) }
-    public actual suspend fun linkWithCredential(credential: AuthCredential): AuthResult = AuthResult(android.linkWithCredential(credential.android).await())
-    public actual suspend fun reauthenticate(credential: AuthCredential) {
+    actual override suspend fun getIdToken(forceRefresh: Boolean): String? = android.getIdToken(forceRefresh).await().token
+    actual override suspend fun getIdTokenResult(forceRefresh: Boolean): AuthTokenResult = android.getIdToken(forceRefresh).await().run { AuthTokenResultImpl(this) }
+    actual override suspend fun linkWithCredential(credential: AuthCredential): AuthResult = AuthResultImpl(android.linkWithCredential(credential.android).await())
+    actual override suspend fun reauthenticate(credential: AuthCredential) {
         android.reauthenticate(credential.android).await()
     }
-    public actual suspend fun reauthenticateAndRetrieveData(credential: AuthCredential): AuthResult = AuthResult(android.reauthenticateAndRetrieveData(credential.android).await())
-    public actual suspend fun sendEmailVerification(actionCodeSettings: ActionCodeSettings?) {
+    actual override suspend fun reauthenticateAndRetrieveData(credential: AuthCredential): AuthResult = AuthResultImpl(android.reauthenticateAndRetrieveData(credential.android).await())
+    actual override suspend fun sendEmailVerification(actionCodeSettings: ActionCodeSettings?) {
         val request = actionCodeSettings?.let { android.sendEmailVerification(it.toAndroid()) } ?: android.sendEmailVerification()
         request.await()
     }
-    public actual suspend fun unlink(provider: String): FirebaseUser? = android.unlink(provider).await().user?.let { FirebaseUser(it) }
+    actual override suspend fun unlink(provider: String): FirebaseUser? = android.unlink(provider).await().user?.let { FirebaseUserImpl(it) }
 
-    @Suppress("DEPRECATION")
-    public actual suspend fun updateEmail(email: String) {
-        android.updateEmail(email).await()
-    }
-    public actual suspend fun updatePassword(password: String) {
+    actual override suspend fun updatePassword(password: String) {
         android.updatePassword(password).await()
     }
-    public actual suspend fun updatePhoneNumber(credential: PhoneAuthCredential) {
+    actual override suspend fun updatePhoneNumber(credential: PhoneAuthCredential) {
         android.updatePhoneNumber(credential.android).await()
     }
-    public actual suspend fun updateProfile(displayName: String?, photoUrl: String?) {
+    actual override suspend fun updateProfile(displayName: String?, photoUrl: String?) {
         val request = UserProfileChangeRequest.Builder()
             .apply { setDisplayName(displayName) }
             .apply { photoUri = photoUrl?.let { Uri.parse(it) } }
             .build()
         android.updateProfile(request).await()
     }
-    public actual suspend fun verifyBeforeUpdateEmail(newEmail: String, actionCodeSettings: ActionCodeSettings?) {
+    actual override suspend fun verifyBeforeUpdateEmail(newEmail: String, actionCodeSettings: ActionCodeSettings?) {
         android.verifyBeforeUpdateEmail(newEmail, actionCodeSettings?.toAndroid()).await()
     }
 }
 
 public val UserInfo.android: com.google.firebase.auth.UserInfo get() = android
 
-public actual class UserInfo(internal val android: com.google.firebase.auth.UserInfo) {
-    public actual val displayName: String?
+internal actual class UserInfoImpl(internal val android: com.google.firebase.auth.UserInfo): UserInfo {
+    actual override val displayName: String?
         get() = android.displayName
-    public actual val email: String?
+    actual override val email: String?
         get() = android.email
-    public actual val phoneNumber: String?
+    actual override val phoneNumber: String?
         get() = android.phoneNumber
-    public actual val photoURL: String?
+    actual override val photoURL: String?
         get() = android.photoUrl?.toString()
-    public actual val providerId: String
+    actual override val providerId: String
         get() = android.providerId
-    public actual val uid: String
+    actual override val uid: String
         get() = android.uid
 }
 
 public val UserMetaData.android: com.google.firebase.auth.FirebaseUserMetadata get() = android
 
-public actual class UserMetaData(internal val android: com.google.firebase.auth.FirebaseUserMetadata) {
-    public actual val creationTime: Double?
+internal actual class UserMetaDataImpl(internal val android: com.google.firebase.auth.FirebaseUserMetadata): UserMetaData {
+    actual override val creationTime: Double?
         get() = android.creationTimestamp.toDouble()
-    public actual val lastSignInTime: Double?
+    actual override val lastSignInTime: Double?
         get() = android.lastSignInTimestamp.toDouble()
 }
