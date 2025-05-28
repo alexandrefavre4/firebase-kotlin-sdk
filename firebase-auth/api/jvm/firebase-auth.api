@@ -51,12 +51,11 @@ public final class dev/gitlive/firebase/auth/ActionCodeSettings {
 	public fun toString ()Ljava/lang/String;
 }
 
-public final class dev/gitlive/firebase/auth/AdditionalUserInfo {
-	public fun <init> ()V
-	public final fun getProfile ()Ljava/util/Map;
-	public final fun getProviderId ()Ljava/lang/String;
-	public final fun getUsername ()Ljava/lang/String;
-	public final fun isNewUser ()Z
+public abstract interface class dev/gitlive/firebase/auth/AdditionalUserInfo {
+	public abstract fun getProfile ()Ljava/util/Map;
+	public abstract fun getProviderId ()Ljava/lang/String;
+	public abstract fun getUsername ()Ljava/lang/String;
+	public abstract fun isNewUser ()Z
 }
 
 public final class dev/gitlive/firebase/auth/AndroidPackageName {
@@ -81,18 +80,16 @@ public class dev/gitlive/firebase/auth/AuthCredential {
 	public final fun getProviderId ()Ljava/lang/String;
 }
 
-public final class dev/gitlive/firebase/auth/AuthResult {
-	public fun <init> (Lcom/google/firebase/auth/AuthResult;)V
-	public final fun getAdditionalUserInfo ()Ldev/gitlive/firebase/auth/AdditionalUserInfo;
-	public final fun getCredential ()Ldev/gitlive/firebase/auth/AuthCredential;
-	public final fun getUser ()Ldev/gitlive/firebase/auth/FirebaseUser;
+public abstract interface class dev/gitlive/firebase/auth/AuthResult {
+	public abstract fun getAdditionalUserInfo ()Ldev/gitlive/firebase/auth/AdditionalUserInfo;
+	public abstract fun getCredential ()Ldev/gitlive/firebase/auth/AuthCredential;
+	public abstract fun getUser ()Ldev/gitlive/firebase/auth/FirebaseUser;
 }
 
-public final class dev/gitlive/firebase/auth/AuthTokenResult {
-	public fun <init> (Lcom/google/firebase/auth/GetTokenResult;)V
-	public final fun getClaims ()Ljava/util/Map;
-	public final fun getSignInProvider ()Ljava/lang/String;
-	public final fun getToken ()Ljava/lang/String;
+public abstract interface class dev/gitlive/firebase/auth/AuthTokenResult {
+	public abstract fun getClaims ()Ljava/util/Map;
+	public abstract fun getSignInProvider ()Ljava/lang/String;
+	public abstract fun getToken ()Ljava/lang/String;
 }
 
 public final class dev/gitlive/firebase/auth/CredentialsKt {
@@ -111,61 +108,92 @@ public final class dev/gitlive/firebase/auth/FacebookAuthProvider {
 	public final fun credential (Ljava/lang/String;)Ldev/gitlive/firebase/auth/AuthCredential;
 }
 
-public final class dev/gitlive/firebase/auth/FirebaseAuth {
-	public final fun applyActionCode (Ljava/lang/String;Lkotlin/coroutines/Continuation;)Ljava/lang/Object;
-	public final fun checkActionCode (Ljava/lang/String;Lkotlin/coroutines/Continuation;)Ljava/lang/Object;
-	public final fun confirmPasswordReset (Ljava/lang/String;Ljava/lang/String;Lkotlin/coroutines/Continuation;)Ljava/lang/Object;
-	public final fun createUserWithEmailAndPassword (Ljava/lang/String;Ljava/lang/String;Lkotlin/coroutines/Continuation;)Ljava/lang/Object;
-	public final fun fetchSignInMethodsForEmail (Ljava/lang/String;Lkotlin/coroutines/Continuation;)Ljava/lang/Object;
-	public final fun getAuthStateChanged ()Lkotlinx/coroutines/flow/Flow;
-	public final fun getCurrentUser ()Ldev/gitlive/firebase/auth/FirebaseUser;
-	public final fun getIdTokenChanged ()Lkotlinx/coroutines/flow/Flow;
-	public final fun getLanguageCode ()Ljava/lang/String;
-	public final fun isSignInWithEmailLink (Ljava/lang/String;)Z
-	public final fun sendPasswordResetEmail (Ljava/lang/String;Ldev/gitlive/firebase/auth/ActionCodeSettings;Lkotlin/coroutines/Continuation;)Ljava/lang/Object;
-	public static synthetic fun sendPasswordResetEmail$default (Ldev/gitlive/firebase/auth/FirebaseAuth;Ljava/lang/String;Ldev/gitlive/firebase/auth/ActionCodeSettings;Lkotlin/coroutines/Continuation;ILjava/lang/Object;)Ljava/lang/Object;
-	public final fun sendSignInLinkToEmail (Ljava/lang/String;Ldev/gitlive/firebase/auth/ActionCodeSettings;Lkotlin/coroutines/Continuation;)Ljava/lang/Object;
-	public final fun setLanguageCode (Ljava/lang/String;)V
-	public final fun signInAnonymously (Lkotlin/coroutines/Continuation;)Ljava/lang/Object;
-	public final fun signInWithCredential (Ldev/gitlive/firebase/auth/AuthCredential;Lkotlin/coroutines/Continuation;)Ljava/lang/Object;
-	public final fun signInWithCustomToken (Ljava/lang/String;Lkotlin/coroutines/Continuation;)Ljava/lang/Object;
-	public final fun signInWithEmailAndPassword (Ljava/lang/String;Ljava/lang/String;Lkotlin/coroutines/Continuation;)Ljava/lang/Object;
-	public final fun signInWithEmailLink (Ljava/lang/String;Ljava/lang/String;Lkotlin/coroutines/Continuation;)Ljava/lang/Object;
-	public final fun signOut (Lkotlin/coroutines/Continuation;)Ljava/lang/Object;
-	public final fun updateCurrentUser (Ldev/gitlive/firebase/auth/FirebaseUser;Lkotlin/coroutines/Continuation;)Ljava/lang/Object;
-	public final fun useEmulator (Ljava/lang/String;I)V
-	public final fun verifyPasswordResetCode (Ljava/lang/String;Lkotlin/coroutines/Continuation;)Ljava/lang/Object;
+public abstract interface class dev/gitlive/firebase/auth/FirebaseAuth {
+	public abstract fun applyActionCode (Ljava/lang/String;Lkotlin/coroutines/Continuation;)Ljava/lang/Object;
+	public abstract fun checkActionCode (Ljava/lang/String;Lkotlin/coroutines/Continuation;)Ljava/lang/Object;
+	public abstract fun confirmPasswordReset (Ljava/lang/String;Ljava/lang/String;Lkotlin/coroutines/Continuation;)Ljava/lang/Object;
+	public abstract fun createUserWithEmailAndPassword (Ljava/lang/String;Ljava/lang/String;Lkotlin/coroutines/Continuation;)Ljava/lang/Object;
+	public abstract fun getAuthStateChanged ()Lkotlinx/coroutines/flow/Flow;
+	public abstract fun getCurrentUser ()Ldev/gitlive/firebase/auth/FirebaseUser;
+	public abstract fun getIdTokenChanged ()Lkotlinx/coroutines/flow/Flow;
+	public abstract fun getLanguageCode ()Ljava/lang/String;
+	public abstract fun isSignInWithEmailLink (Ljava/lang/String;)Z
+	public abstract fun sendPasswordResetEmail (Ljava/lang/String;Ldev/gitlive/firebase/auth/ActionCodeSettings;Lkotlin/coroutines/Continuation;)Ljava/lang/Object;
+	public abstract fun sendSignInLinkToEmail (Ljava/lang/String;Ldev/gitlive/firebase/auth/ActionCodeSettings;Lkotlin/coroutines/Continuation;)Ljava/lang/Object;
+	public abstract fun setLanguageCode (Ljava/lang/String;)V
+	public abstract fun signInAnonymously (Lkotlin/coroutines/Continuation;)Ljava/lang/Object;
+	public abstract fun signInWithCredential (Ldev/gitlive/firebase/auth/AuthCredential;Lkotlin/coroutines/Continuation;)Ljava/lang/Object;
+	public abstract fun signInWithCustomToken (Ljava/lang/String;Lkotlin/coroutines/Continuation;)Ljava/lang/Object;
+	public abstract fun signInWithEmailAndPassword (Ljava/lang/String;Ljava/lang/String;Lkotlin/coroutines/Continuation;)Ljava/lang/Object;
+	public abstract fun signInWithEmailLink (Ljava/lang/String;Ljava/lang/String;Lkotlin/coroutines/Continuation;)Ljava/lang/Object;
+	public abstract fun signOut (Lkotlin/coroutines/Continuation;)Ljava/lang/Object;
+	public abstract fun updateCurrentUser (Ldev/gitlive/firebase/auth/FirebaseUser;Lkotlin/coroutines/Continuation;)Ljava/lang/Object;
+	public abstract fun useEmulator (Ljava/lang/String;I)V
+	public abstract fun verifyPasswordResetCode (Ljava/lang/String;Lkotlin/coroutines/Continuation;)Ljava/lang/Object;
 }
 
-public final class dev/gitlive/firebase/auth/FirebaseUser {
-	public final fun delete (Lkotlin/coroutines/Continuation;)Ljava/lang/Object;
-	public final fun getDisplayName ()Ljava/lang/String;
-	public final fun getEmail ()Ljava/lang/String;
-	public final fun getIdToken (ZLkotlin/coroutines/Continuation;)Ljava/lang/Object;
-	public final fun getIdTokenResult (ZLkotlin/coroutines/Continuation;)Ljava/lang/Object;
-	public final fun getMetaData ()Ldev/gitlive/firebase/auth/UserMetaData;
-	public final fun getMultiFactor ()Ldev/gitlive/firebase/auth/MultiFactor;
-	public final fun getPhoneNumber ()Ljava/lang/String;
-	public final fun getPhotoURL ()Ljava/lang/String;
-	public final fun getProviderData ()Ljava/util/List;
-	public final fun getProviderId ()Ljava/lang/String;
-	public final fun getUid ()Ljava/lang/String;
-	public final fun isAnonymous ()Z
-	public final fun isEmailVerified ()Z
-	public final fun linkWithCredential (Ldev/gitlive/firebase/auth/AuthCredential;Lkotlin/coroutines/Continuation;)Ljava/lang/Object;
-	public final fun reauthenticate (Ldev/gitlive/firebase/auth/AuthCredential;Lkotlin/coroutines/Continuation;)Ljava/lang/Object;
-	public final fun reauthenticateAndRetrieveData (Ldev/gitlive/firebase/auth/AuthCredential;Lkotlin/coroutines/Continuation;)Ljava/lang/Object;
-	public final fun reload (Lkotlin/coroutines/Continuation;)Ljava/lang/Object;
-	public final fun sendEmailVerification (Ldev/gitlive/firebase/auth/ActionCodeSettings;Lkotlin/coroutines/Continuation;)Ljava/lang/Object;
+public final class dev/gitlive/firebase/auth/FirebaseAuth$DefaultImpls {
+	public static synthetic fun sendPasswordResetEmail$default (Ldev/gitlive/firebase/auth/FirebaseAuth;Ljava/lang/String;Ldev/gitlive/firebase/auth/ActionCodeSettings;Lkotlin/coroutines/Continuation;ILjava/lang/Object;)Ljava/lang/Object;
+}
+
+public abstract interface class dev/gitlive/firebase/auth/FirebaseUser {
+	public abstract fun delete (Lkotlin/coroutines/Continuation;)Ljava/lang/Object;
+	public abstract fun getDisplayName ()Ljava/lang/String;
+	public abstract fun getEmail ()Ljava/lang/String;
+	public abstract fun getIdToken (ZLkotlin/coroutines/Continuation;)Ljava/lang/Object;
+	public abstract fun getIdTokenResult (ZLkotlin/coroutines/Continuation;)Ljava/lang/Object;
+	public abstract fun getMetaData ()Ldev/gitlive/firebase/auth/UserMetaData;
+	public abstract fun getMultiFactor ()Ldev/gitlive/firebase/auth/MultiFactor;
+	public abstract fun getPhoneNumber ()Ljava/lang/String;
+	public abstract fun getPhotoURL ()Ljava/lang/String;
+	public abstract fun getProviderData ()Ljava/util/List;
+	public abstract fun getProviderId ()Ljava/lang/String;
+	public abstract fun getUid ()Ljava/lang/String;
+	public abstract fun isAnonymous ()Z
+	public abstract fun isEmailVerified ()Z
+	public abstract fun linkWithCredential (Ldev/gitlive/firebase/auth/AuthCredential;Lkotlin/coroutines/Continuation;)Ljava/lang/Object;
+	public abstract fun reauthenticate (Ldev/gitlive/firebase/auth/AuthCredential;Lkotlin/coroutines/Continuation;)Ljava/lang/Object;
+	public abstract fun reauthenticateAndRetrieveData (Ldev/gitlive/firebase/auth/AuthCredential;Lkotlin/coroutines/Continuation;)Ljava/lang/Object;
+	public abstract fun reload (Lkotlin/coroutines/Continuation;)Ljava/lang/Object;
+	public abstract fun sendEmailVerification (Ldev/gitlive/firebase/auth/ActionCodeSettings;Lkotlin/coroutines/Continuation;)Ljava/lang/Object;
+	public abstract fun unlink (Ljava/lang/String;Lkotlin/coroutines/Continuation;)Ljava/lang/Object;
+	public abstract fun updatePassword (Ljava/lang/String;Lkotlin/coroutines/Continuation;)Ljava/lang/Object;
+	public abstract fun updatePhoneNumber (Ldev/gitlive/firebase/auth/PhoneAuthCredential;Lkotlin/coroutines/Continuation;)Ljava/lang/Object;
+	public abstract fun updateProfile (Ljava/lang/String;Ljava/lang/String;Lkotlin/coroutines/Continuation;)Ljava/lang/Object;
+	public abstract fun verifyBeforeUpdateEmail (Ljava/lang/String;Ldev/gitlive/firebase/auth/ActionCodeSettings;Lkotlin/coroutines/Continuation;)Ljava/lang/Object;
+}
+
+public final class dev/gitlive/firebase/auth/FirebaseUser$DefaultImpls {
 	public static synthetic fun sendEmailVerification$default (Ldev/gitlive/firebase/auth/FirebaseUser;Ldev/gitlive/firebase/auth/ActionCodeSettings;Lkotlin/coroutines/Continuation;ILjava/lang/Object;)Ljava/lang/Object;
-	public final fun unlink (Ljava/lang/String;Lkotlin/coroutines/Continuation;)Ljava/lang/Object;
-	public final fun updateEmail (Ljava/lang/String;Lkotlin/coroutines/Continuation;)Ljava/lang/Object;
-	public final fun updatePassword (Ljava/lang/String;Lkotlin/coroutines/Continuation;)Ljava/lang/Object;
-	public final fun updatePhoneNumber (Ldev/gitlive/firebase/auth/PhoneAuthCredential;Lkotlin/coroutines/Continuation;)Ljava/lang/Object;
-	public final fun updateProfile (Ljava/lang/String;Ljava/lang/String;Lkotlin/coroutines/Continuation;)Ljava/lang/Object;
 	public static synthetic fun updateProfile$default (Ldev/gitlive/firebase/auth/FirebaseUser;Ljava/lang/String;Ljava/lang/String;Lkotlin/coroutines/Continuation;ILjava/lang/Object;)Ljava/lang/Object;
-	public final fun verifyBeforeUpdateEmail (Ljava/lang/String;Ldev/gitlive/firebase/auth/ActionCodeSettings;Lkotlin/coroutines/Continuation;)Ljava/lang/Object;
 	public static synthetic fun verifyBeforeUpdateEmail$default (Ldev/gitlive/firebase/auth/FirebaseUser;Ljava/lang/String;Ldev/gitlive/firebase/auth/ActionCodeSettings;Lkotlin/coroutines/Continuation;ILjava/lang/Object;)Ljava/lang/Object;
+}
+
+public final class dev/gitlive/firebase/auth/FirebaseUserImpl : dev/gitlive/firebase/auth/FirebaseUser {
+	public fun delete (Lkotlin/coroutines/Continuation;)Ljava/lang/Object;
+	public fun getDisplayName ()Ljava/lang/String;
+	public fun getEmail ()Ljava/lang/String;
+	public fun getIdToken (ZLkotlin/coroutines/Continuation;)Ljava/lang/Object;
+	public fun getIdTokenResult (ZLkotlin/coroutines/Continuation;)Ljava/lang/Object;
+	public fun getMetaData ()Ldev/gitlive/firebase/auth/UserMetaData;
+	public fun getMultiFactor ()Ldev/gitlive/firebase/auth/MultiFactor;
+	public fun getPhoneNumber ()Ljava/lang/String;
+	public fun getPhotoURL ()Ljava/lang/String;
+	public fun getProviderData ()Ljava/util/List;
+	public fun getProviderId ()Ljava/lang/String;
+	public fun getUid ()Ljava/lang/String;
+	public fun isAnonymous ()Z
+	public fun isEmailVerified ()Z
+	public fun linkWithCredential (Ldev/gitlive/firebase/auth/AuthCredential;Lkotlin/coroutines/Continuation;)Ljava/lang/Object;
+	public fun reauthenticate (Ldev/gitlive/firebase/auth/AuthCredential;Lkotlin/coroutines/Continuation;)Ljava/lang/Object;
+	public fun reauthenticateAndRetrieveData (Ldev/gitlive/firebase/auth/AuthCredential;Lkotlin/coroutines/Continuation;)Ljava/lang/Object;
+	public fun reload (Lkotlin/coroutines/Continuation;)Ljava/lang/Object;
+	public fun sendEmailVerification (Ldev/gitlive/firebase/auth/ActionCodeSettings;Lkotlin/coroutines/Continuation;)Ljava/lang/Object;
+	public fun unlink (Ljava/lang/String;Lkotlin/coroutines/Continuation;)Ljava/lang/Object;
+	public fun updatePassword (Ljava/lang/String;Lkotlin/coroutines/Continuation;)Ljava/lang/Object;
+	public fun updatePhoneNumber (Ldev/gitlive/firebase/auth/PhoneAuthCredential;Lkotlin/coroutines/Continuation;)Ljava/lang/Object;
+	public fun updateProfile (Ljava/lang/String;Ljava/lang/String;Lkotlin/coroutines/Continuation;)Ljava/lang/Object;
+	public fun verifyBeforeUpdateEmail (Ljava/lang/String;Ldev/gitlive/firebase/auth/ActionCodeSettings;Lkotlin/coroutines/Continuation;)Ljava/lang/Object;
 }
 
 public final class dev/gitlive/firebase/auth/GithubAuthProvider {
@@ -265,14 +293,23 @@ public final class dev/gitlive/firebase/auth/TwitterAuthProvider {
 	public final fun credential (Ljava/lang/String;Ljava/lang/String;)Ldev/gitlive/firebase/auth/AuthCredential;
 }
 
-public final class dev/gitlive/firebase/auth/UserInfo {
+public abstract interface class dev/gitlive/firebase/auth/UserInfo {
+	public abstract fun getDisplayName ()Ljava/lang/String;
+	public abstract fun getEmail ()Ljava/lang/String;
+	public abstract fun getPhoneNumber ()Ljava/lang/String;
+	public abstract fun getPhotoURL ()Ljava/lang/String;
+	public abstract fun getProviderId ()Ljava/lang/String;
+	public abstract fun getUid ()Ljava/lang/String;
+}
+
+public final class dev/gitlive/firebase/auth/UserInfoImpl : dev/gitlive/firebase/auth/UserInfo {
 	public fun <init> (Lcom/google/firebase/auth/UserInfo;)V
-	public final fun getDisplayName ()Ljava/lang/String;
-	public final fun getEmail ()Ljava/lang/String;
-	public final fun getPhoneNumber ()Ljava/lang/String;
-	public final fun getPhotoURL ()Ljava/lang/String;
-	public final fun getProviderId ()Ljava/lang/String;
-	public final fun getUid ()Ljava/lang/String;
+	public fun getDisplayName ()Ljava/lang/String;
+	public fun getEmail ()Ljava/lang/String;
+	public fun getPhoneNumber ()Ljava/lang/String;
+	public fun getPhotoURL ()Ljava/lang/String;
+	public fun getProviderId ()Ljava/lang/String;
+	public fun getUid ()Ljava/lang/String;
 }
 
 public final class dev/gitlive/firebase/auth/UserKt {
@@ -281,16 +318,22 @@ public final class dev/gitlive/firebase/auth/UserKt {
 	public static final fun getAndroid (Ldev/gitlive/firebase/auth/UserMetaData;)Lcom/google/firebase/auth/FirebaseUserMetadata;
 }
 
-public final class dev/gitlive/firebase/auth/UserMetaData {
+public abstract interface class dev/gitlive/firebase/auth/UserMetaData {
+	public abstract fun getCreationTime ()Ljava/lang/Double;
+	public abstract fun getLastSignInTime ()Ljava/lang/Double;
+}
+
+public final class dev/gitlive/firebase/auth/UserMetaDataImpl : dev/gitlive/firebase/auth/UserMetaData {
 	public fun <init> (Lcom/google/firebase/auth/FirebaseUserMetadata;)V
-	public final fun getCreationTime ()Ljava/lang/Double;
-	public final fun getLastSignInTime ()Ljava/lang/Double;
+	public fun getCreationTime ()Ljava/lang/Double;
+	public fun getLastSignInTime ()Ljava/lang/Double;
 }
 
 public final class dev/gitlive/firebase/auth/android {
 	public static final fun auth (Ldev/gitlive/firebase/Firebase;Ldev/gitlive/firebase/FirebaseApp;)Ldev/gitlive/firebase/auth/FirebaseAuth;
 	public static final fun getAndroid (Ldev/gitlive/firebase/auth/AuthResult;)Lcom/google/firebase/auth/AuthResult;
 	public static final fun getAndroid (Ldev/gitlive/firebase/auth/AuthTokenResult;)Lcom/google/firebase/auth/GetTokenResult;
+	public static final fun getAndroid (Ldev/gitlive/firebase/auth/FirebaseAuth;)Lcom/google/firebase/auth/FirebaseAuth;
 	public static final fun getAuth (Ldev/gitlive/firebase/Firebase;)Ldev/gitlive/firebase/auth/FirebaseAuth;
 }
 
